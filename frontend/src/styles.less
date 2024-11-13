@@ -1,0 +1,115 @@
+@import "./app/shared/styles/variables.less";
+
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.width-wrapper {
+  width: 100%;
+  max-width: @max-w-width-wrapper;
+}
+
+a,
+button {
+  margin: 0px;
+  padding: 0px;
+  font-family: @std-font;
+  font-size: @fontsize-std;
+  text-decoration: none;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0px;
+  padding: 0px;
+  font-family: @std-font;
+  color: black;
+}
+
+h1 {
+  font-size: @fontsize-h1 ;
+}
+
+h2 {
+  font-size: @fontsize-h2 ;
+}
+
+h3 {
+  font-size: @fontsize-h3;
+}
+
+h4 {
+  font-size: @fontsize-h4;
+}
+
+p {
+  font-family: @std-font;
+  font-size: @fontsize-std;
+  color: black;
+  margin: 0px;
+}
+
+ul {
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
+}
+
+
+label,
+.label {
+  color: @color-light;
+  font-size: @fontsize-std;
+  font-family: @std-font;
+}
+
+.text-fat {
+  font-family: @std-font;
+  font-weight: 900;
+  font-size: @fontsize-h1;
+  text-transform: uppercase;
+}
+
+.text-thin {
+  font-family: @std-font;
+  font-weight: 100;
+  font-size: @fontsize-h1;
+  text-transform: uppercase;
+}
+
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+//alignment----------------------------------------------
+.acr {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.acc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
