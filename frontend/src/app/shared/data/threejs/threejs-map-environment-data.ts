@@ -1,4 +1,4 @@
-import { EventEmitter } from "@angular/core";
+import { ElementRef, EventEmitter } from "@angular/core";
 import { WebGLRenderer, PerspectiveCamera, Scene, Clock, Vector2, MeshPhongMaterial, MeshBasicMaterial, LineBasicMaterial } from "three";
 import { FontLoader, Font } from "three/examples/jsm/Addons.js";
 import { CameraController } from "../../../pages/home/earth/scene-components/scene-environment/camera-controller";
@@ -22,6 +22,7 @@ export class ThreejsMapEnvironmentData {
 
 
     renderer!: WebGLRenderer;
+    canvas!:HTMLCanvasElement | OffscreenCanvas | undefined;
     camera!: PerspectiveCamera;
     cameraControllsMaxDistance: number = 40;
     scene!: Scene;

@@ -15,6 +15,7 @@ import { Earth } from './scene-components/earth/earth';
 })
 export class EarthComponent extends TouchEventHelper implements OnInit, OnDestroy {
   @ViewChild("canvas") canvasElem!: ElementRef;
+  @ViewChild("splineCanvas") splineCanvasElem!: ElementRef;
 
   private runLoop: boolean = true;
   private isLoopRunning: boolean = false;
@@ -77,8 +78,8 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     if (this.threeMapEnvData.renderer == null) {
 
       //init renderer-------------------------
+      this.threeMapEnvData.canvas = this.splineCanvasElem.nativeElement;
       this.threeMapEnvData.renderer = new WebGLRenderer({
-        //antialias: true,
         canvas: this.canvasElem.nativeElement,
       });
       this.threeMapEnvData.renderer.shadowMap.enabled = true;
@@ -99,7 +100,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       //events---------------------------------
       this.subscribeToClassEvents();
       this.subscribeToTouchEvents();
-      this.setMapSize(new Vector2(window.innerWidth,window.innerHeight));
+      this.setMapSize(new Vector2(window.innerWidth, window.innerHeight));
     }
 
     //start loop-----------------------------
