@@ -6,7 +6,8 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { GLTFAsSeparatedMeshesImporter } from '../home/earth/importers/gltf-as-separated-meshes-importer';
+import { getTexturedFresnelMaterial } from '../home/earth/scene-components/earth/shader-materials/fresnel-material';
 
 @Component({
   selector: 'app-test',
@@ -36,6 +37,7 @@ export class TestComponent {
   private readonly BLOOM_SCENE = 1;
   private bloomLayer = new THREE.Layers();
 
+
   constructor(private elRef: ElementRef) {
     this.bloomLayer.set(this.BLOOM_SCENE);
   }
@@ -43,7 +45,6 @@ export class TestComponent {
   ngAfterViewInit(): void {
     this.initThree();
     this.setupScene();
-    this.addGUIControls();
     this.render();
   }
 
@@ -69,7 +70,11 @@ export class TestComponent {
 
     const renderScene = new RenderPass(this.scene, this.camera);
 
-    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.8, //strenght
+      0.1, //radius
+      0.0 //threshold
+    );
     this.bloomComposer = new EffectComposer(this.renderer);
     this.bloomComposer.renderToScreen = false;
     this.bloomComposer.addPass(renderScene);
@@ -110,40 +115,34 @@ export class TestComponent {
   }
 
   private setupScene() {
-    const geometry = new THREE.IcosahedronGeometry(1, 15);
 
-    for (let i = 0; i < 50; i++) {
-      const color = new THREE.Color();
-      color.setHSL(Math.random(), 0.7, Math.random() * 0.2 + 0.05);
+    const shaderMaterialSettings = [
+      {
+        texture: 'textures/earth/earth-night.png',
+        fresnelPower: 0.4,
+        fresnelColor: new THREE.Vector4(0.0, 0.0, 1.0, 1.0),
+      },
+      {
+        texture: 'textures/earth/layer-1-inner.png',
+        fresnelPower: 0.5,
+        fresnelColor: new THREE.Vector4(1.0, 0.0, 0.0, 1.0),
+      }
+    ];
 
-      const material = new THREE.MeshBasicMaterial({ color });
-      const sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(
-        (Math.random() * 10 - 5) * Math.random(),
-        (Math.random() * 10 - 5) * Math.random(),
-        (Math.random() * 10 - 5) * Math.random()
-      );
-      sphere.position.normalize().multiplyScalar(Math.random() * 4.0 + 2.0);
-      sphere.scale.setScalar(Math.random() * Math.random() + 0.5);
-      this.scene.add(sphere);
+    const gltfImporter = new GLTFAsSeparatedMeshesImporter();
 
-      if (Math.random() < 0.25) sphere.layers.enable(this.BLOOM_SCENE);
-    }
-  }
+    gltfImporter.loadModel('earth/layer-1.glb', (meshes: any) => {
+      meshes.forEach((mesh: THREE.Mesh, index: number) => {
+        const convertedMesh: THREE.Mesh = mesh.clone();
+        convertedMesh.material = getTexturedFresnelMaterial(
+          shaderMaterialSettings[index].texture,
+          shaderMaterialSettings[index].fresnelPower,
+          shaderMaterialSettings[index].fresnelColor
+        )
+        convertedMesh.layers.enable(this.BLOOM_SCENE)
+        this.scene.add(convertedMesh);
 
-  private addGUIControls() {
-    const gui = new GUI();
-    const bloomFolder = gui.addFolder('bloom');
-    bloomFolder.add(this.params, 'threshold', 0.0, 1.0).onChange(value => {
-      this.bloomPass.threshold = Number(value);
-      this.render();
-    });
-    bloomFolder.add(this.params, 'strength', 0.0, 3).onChange(value => {
-      this.bloomPass.strength = Number(value);
-      this.render();
-    });
-    bloomFolder.add(this.params, 'radius', 0.0, 1.0).step(0.01).onChange(value => {
-      this.bloomPass.radius = Number(value);
+      });
       this.render();
     });
   }
