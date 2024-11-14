@@ -30,7 +30,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
   threeMapEnvData: ThreejsMapEnvironmentData;
 
-  composer!: EffectComposer;
+  bloomComposer!: EffectComposer;
 
   constructor() {
     super();
@@ -53,7 +53,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.isLoopRunning = true;
 
       this.threeMapEnvData.camController?.render();
-      this.composer?.render();
+      this.bloomComposer?.render();
       //console.log(this.composer);
 
       this.threeMapEnvData.renderer.render(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
@@ -96,6 +96,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.threeMapEnvData.renderer.setClearColor(0x000000, 0);
       this.threeMapEnvData.renderer.setSize(this.threeMapEnvData.width, this.threeMapEnvData.height);
       this.threeMapEnvData.renderer.setPixelRatio(2);
+      this.threeMapEnvData.renderer.autoClear = false;
 
       this.threeMapEnvData.scene = new Scene();
       this.threeMapEnvData.clock = new Clock();
@@ -116,22 +117,20 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.setMapSize(new Vector2(window.innerWidth, window.innerHeight));
 
       //post processing-----------------------
-      this.composer = new EffectComposer(this.threeMapEnvData.renderer);
-      const renderPass = new RenderPass(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
-      this.composer.addPass(renderPass);
-      
+      //bloom renderer
+      const renderScene = new RenderPass(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
       const bloomPass = new UnrealBloomPass(
-          new Vector2(window.innerWidth, window.innerHeight),
-          1.5, // strength
-          0.4, // radius
-          0.85 // threshold
+        new Vector2(window.innerWidth, window.innerHeight),
+       0,0,0
       );
-      this.composer.addPass(bloomPass);
-
-      const outputPass = new OutputPass();
-      this.composer.addPass(outputPass);
-      this.composer?.setSize(window.innerWidth, window.innerHeight);
-
+      bloomPass.threshold = 0.1;
+      bloomPass.strength = 1;
+      bloomPass.radius = 1;
+      this.bloomComposer = new EffectComposer(this.threeMapEnvData.renderer);
+      this.bloomComposer.setSize(window.innerWidth, window.innerHeight);
+      this.bloomComposer.renderToScreen = true;
+      this.bloomComposer.addPass(renderScene);
+      this.bloomComposer.addPass(bloomPass);
     }
 
     //start loop-----------------------------
