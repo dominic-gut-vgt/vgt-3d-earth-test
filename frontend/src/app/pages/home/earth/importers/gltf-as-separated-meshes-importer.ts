@@ -18,15 +18,16 @@ export class GLTFAsSeparatedMeshesImporter {
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('/examples/jsm/libs/draco/');
     assetLoader.setDRACOLoader(dracoLoader);
-    assetLoader.load('/3d-models/' + relativeModelPath, (object:any) => {
-      object.scene.traverse((child:any) => {
-        let mesh = (child as Mesh);
-        if (mesh.isMesh) {
-          this.separatedMeshes.push(mesh);
-        }
-      });
-
-      finishedCallback(this.separatedMeshes)
+    assetLoader.load('/3d-models/gltf/' + relativeModelPath, (object: any) => {
+      
+       object.scene.traverse((child:any) => {
+         let mesh = (child as Mesh);
+         if (mesh.isMesh) {
+           this.separatedMeshes.push(mesh);
+         }
+       });
+       finishedCallback(this.separatedMeshes);
+ 
     }, (xhr: any) => { },
       (error: any) => {
         console.log(error)
