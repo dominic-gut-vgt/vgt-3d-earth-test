@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Clock, Scene, Vector2, WebGLRenderer } from 'three';
+import { Clock, EquirectangularReflectionMapping, Mesh, MeshBasicMaterial, Scene, SphereGeometry, Vector2, WebGLRenderer } from 'three';
 import { ThreejsMapEnvironmentData } from '../../../shared/data/threejs/threejs-map-environment-data';
 import { CameraController } from './scene-components/scene-environment/camera-controller';
 import { TouchEventHelper } from '../../../shared/classes/touch-event-helper';
@@ -10,7 +10,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GlitchPass } from 'three/addons/postprocessing/GlitchPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/Addons.js';
+import { RGBELoader, UnrealBloomPass } from 'three/examples/jsm/Addons.js';
 
 @Component({
   selector: 'app-earth',
@@ -102,9 +102,15 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.threeMapEnvData.clock = new Clock();
 
 
+      new RGBELoader().load('textures/hdr/environment.hdr', (map) => {
+        map.mapping = EquirectangularReflectionMapping;
+        this.threeMapEnvData.scene.background = map;
+      })
 
-
-
+      const geometry = new SphereGeometry( 0.5, 32, 16 ); 
+      const material = new MeshBasicMaterial( { color: 0xffff00 } ); 
+      const sphere = new Mesh( geometry, material );
+      this.threeMapEnvData. scene.add( sphere );
 
       //class inits----------------------------
       this.threeMapEnvData.camController = new CameraController(this.threeMapEnvData);
@@ -121,7 +127,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       const renderScene = new RenderPass(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
       const bloomPass = new UnrealBloomPass(
         new Vector2(window.innerWidth, window.innerHeight),
-       0,0,0
+        0, 0, 0
       );
       bloomPass.threshold = 0.1;
       bloomPass.strength = 1;
