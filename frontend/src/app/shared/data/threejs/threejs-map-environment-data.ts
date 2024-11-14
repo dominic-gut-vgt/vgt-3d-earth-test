@@ -24,7 +24,7 @@ export class ThreejsMapEnvironmentData {
     renderer!: WebGLRenderer;
     canvas!:HTMLCanvasElement | OffscreenCanvas | undefined;
     camera!: PerspectiveCamera;
-    cameraControllsMaxDistance: number = 40;
+    cameraControllsMaxDistance: number = 100;
     scene!: Scene;
     clock!: Clock;
     width: number = 0;// width of map (not screen)

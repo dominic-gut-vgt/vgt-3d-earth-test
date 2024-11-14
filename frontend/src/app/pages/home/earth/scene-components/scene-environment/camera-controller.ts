@@ -6,6 +6,7 @@ import { ThreejsMapEnvironmentData } from "../../../../../shared/data/threejs/th
 
 
 export class CameraController extends MapElement {
+
     cam!: PerspectiveCamera;
     controls!: OrbitControls;
 
@@ -58,81 +59,9 @@ export class CameraController extends MapElement {
     }
 
     override render(): void {
-        if (this.camPositionInited) {
-            this.controls.update();
-            this.distance = this.controls.getDistance();
-            this.controls.rotateSpeed = this.distance / this.cameraControllsMaxDistance;
-            if (this.prevDistance != this.distance) {
-                this.cameraDistanceUpdatedEvent.emit(this.distance);
-            }
-            this.prevDistance = this.distance;
-
-            if (!this.targetReached) {
-                this.rotateToPositionStepByStep();
-            }
-        } else {
-            this.initCameraPosition();
-        }
-
-    }
-
-    initCameraPosition(): void {
-        if (this.camera) {
-            let easedTime: number = this.getEasedInAndOutTime(this.currentCamInitTime / this.camInitTime);
-            if (easedTime !== 1) {
-                this.camera.position.x = (1 - easedTime) * -10;
-                this.camera.position.y = (1 - easedTime) * 10;
-                this.camera.position.z = 10 + easedTime * 15;
-                this.controls.update();
-                this.currentCamInitTime++;
-            } else {
-                this.camPositionInited = true
-            }
-        }
-
-    }
-
-    private rotateToPositionStepByStep(): void {
-        if (this.camera != null) {
-            let lerpTime = this.getEasedInAndOutTime(this.rotationStepCount / this.rotationDivisions);
-            let currentTheta: number = MathUtils.lerp(this.startTheta, this.targetTheta, lerpTime);
-            let currentPhi: number = MathUtils.lerp(this.startPhi, this.targetPhi, lerpTime);
-
-            const radius = this.camera.position.length();
-
-            this.camera.position.x = radius * Math.sin(currentTheta) * Math.cos(currentPhi);
-            this.camera.position.y = radius * Math.cos(currentTheta);
-            this.camera.position.z = radius * Math.sin(currentTheta) * Math.sin(currentPhi);
-
-            this.controls.update();
-
-            if (this.rotationStepCount == this.rotationDivisions) {
-                this.rotationStepCount = 0;
-                this.targetReached = true;
-            }
-            this.rotationStepCount++;
-        }
-    }
-
-    startRotatingToPosition(targetPos: Vector3): void {
-        if (this.camera != null) {
-
-            const radius = targetPos.length(); // equivalent to Math.sqrt(x*x + y*y + z*z)
-
-            this.targetTheta = Math.acos(targetPos.y / radius); // polar angle = up/down
-            this.targetPhi = Math.atan2(targetPos.z, targetPos.x); // azimuthal angle= left/right
-            this.startTheta = Math.acos(this.camera.position.y / this.camera.position.length());
-            this.startPhi = Math.atan2(this.camera.position.z, this.camera.position.x);
-
-            this.targetReached = false;
-        }
+        this.controls.update();
     }
 
     override resize(): void {
     }
-
-    getEasedInAndOutTime(t: number): number {
-        return t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
-
 }

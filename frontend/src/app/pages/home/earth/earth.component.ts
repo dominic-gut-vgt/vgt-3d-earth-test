@@ -6,6 +6,12 @@ import { TouchEventHelper } from '../../../shared/classes/touch-event-helper';
 import { Lighting } from './scene-components/scene-environment/lighting';
 import { Earth } from './scene-components/earth/earth';
 
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GlitchPass } from 'three/addons/postprocessing/GlitchPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/Addons.js';
+
 @Component({
   selector: 'app-earth',
   standalone: true,
@@ -24,6 +30,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
   threeMapEnvData: ThreejsMapEnvironmentData;
 
+  composer!: EffectComposer;
 
   constructor() {
     super();
@@ -46,6 +53,8 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.isLoopRunning = true;
 
       this.threeMapEnvData.camController?.render();
+      this.composer?.render();
+      //console.log(this.composer);
 
       this.threeMapEnvData.renderer.render(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
       window.requestAnimationFrame(() => {
@@ -80,9 +89,9 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       //init renderer-------------------------
       this.threeMapEnvData.canvas = this.splineCanvasElem.nativeElement;
       this.threeMapEnvData.renderer = new WebGLRenderer({
+        antialias: true,
         canvas: this.canvasElem.nativeElement,
       });
-      this.threeMapEnvData.renderer.shadowMap.enabled = true;
 
       this.threeMapEnvData.renderer.setClearColor(0x000000, 0);
       this.threeMapEnvData.renderer.setSize(this.threeMapEnvData.width, this.threeMapEnvData.height);
@@ -90,6 +99,10 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
       this.threeMapEnvData.scene = new Scene();
       this.threeMapEnvData.clock = new Clock();
+
+
+
+
 
 
       //class inits----------------------------
@@ -101,6 +114,24 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.subscribeToClassEvents();
       this.subscribeToTouchEvents();
       this.setMapSize(new Vector2(window.innerWidth, window.innerHeight));
+
+      //post processing-----------------------
+      this.composer = new EffectComposer(this.threeMapEnvData.renderer);
+      const renderPass = new RenderPass(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
+      this.composer.addPass(renderPass);
+      
+      const bloomPass = new UnrealBloomPass(
+          new Vector2(window.innerWidth, window.innerHeight),
+          1.5, // strength
+          0.4, // radius
+          0.85 // threshold
+      );
+      this.composer.addPass(bloomPass);
+
+      const outputPass = new OutputPass();
+      this.composer.addPass(outputPass);
+      this.composer?.setSize(window.innerWidth, window.innerHeight);
+
     }
 
     //start loop-----------------------------
@@ -108,9 +139,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     this.loop();
   }
 
-  subscribeToClassEvents(): void {
-
-  }
+  subscribeToClassEvents(): void { }
 
   subscribeToTouchEvents(): void {
     this.touchStartEvent.subscribe((point: Vector2) => {
