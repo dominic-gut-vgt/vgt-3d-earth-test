@@ -54,11 +54,12 @@ export class CameraController extends MapElement {
             this.controls.enablePan = false;
             this.controls.enableDamping = true;
         }
-        this.camera.position.z = 25;
+        this.camera.position.z = 100;
         this.scene?.add(this.cam);
     }
 
     override render(): void {
+
         this.controls.update();
     }
 

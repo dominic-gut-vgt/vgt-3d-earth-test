@@ -8,9 +8,7 @@ import { Earth } from './scene-components/earth/earth';
 
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { GlitchPass } from 'three/addons/postprocessing/GlitchPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { FXAAShader, RGBELoader, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addons.js';
+import { FXAAShader, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addons.js';
 
 @Component({
   selector: 'app-earth',
@@ -50,6 +48,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     if (!this.isLoopRunning) {
       this.isLoopRunning = true;
 
+      //handling of layers----------------------------------
       this.threeMapEnvData.camController?.render();
       this.threeMapEnvData.renderer.clear();
 
@@ -59,6 +58,9 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.threeMapEnvData.renderer.clearDepth();
       this.threeMapEnvData.camera.layers.set(0);
       this.threeMapEnvData.renderer.render(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
+
+      //render scene components-----------------------------
+      this.threeMapEnvData.earth?.render();
 
       window.requestAnimationFrame(() => {
         this.isLoopRunning = false;

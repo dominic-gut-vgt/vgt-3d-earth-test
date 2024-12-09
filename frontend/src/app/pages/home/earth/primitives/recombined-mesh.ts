@@ -1,4 +1,4 @@
-import { Color, FrontSide, Mesh, NormalBlending, Object3D, Vector3 } from "three";
+import { Color, FrontSide, Material, Mesh, NormalBlending, Object3D, Vector3 } from "three";
 import { ThreejsMapEnvironmentData } from "../../../../shared/data/threejs/threejs-map-environment-data";
 import { ShaderMaterialSettings } from "../../../../shared/interfaces/threejs/shader-material-settings";
 import { MapElement } from "../base-classes/map-element";
@@ -9,13 +9,15 @@ export class RecombinedMesh extends MapElement {
 
     relativeModelPath: string;
     shaderMaterialSettings: ShaderMaterialSettings[];
-
     emptyObject!: Object3D;
     layer: number = 0;
-    constructor(threeMapEnvData: ThreejsMapEnvironmentData, relativeModelPath: string, shaderMaterialSettings: ShaderMaterialSettings[], layer: number) {
+    standardMaterials: Material[] = [];
+
+    constructor(threeMapEnvData: ThreejsMapEnvironmentData, relativeModelPath: string, shaderMaterialSettings: ShaderMaterialSettings[], standardMaterials: Material[], layer: number) {
         super(threeMapEnvData);
         this.relativeModelPath = relativeModelPath;
         this.shaderMaterialSettings = shaderMaterialSettings;
+        this.standardMaterials = standardMaterials;
         this.layer = layer;
         this.init();
     }
@@ -30,11 +32,16 @@ export class RecombinedMesh extends MapElement {
         gltfImporter.loadModel(this.relativeModelPath, (meshes: any) => {
             meshes.forEach((mesh: Mesh, index: number) => {
                 const convertedMesh: Mesh = mesh.clone();
-                convertedMesh.material = getTexturedFresnelMaterial(
-                    this.shaderMaterialSettings[index].texture,
-                    this.shaderMaterialSettings[index].fresnelPower,
-                    this.shaderMaterialSettings[index].fresnelColor
-                )
+                if (this.shaderMaterialSettings.length) {
+                    convertedMesh.material = getTexturedFresnelMaterial(
+                        this.shaderMaterialSettings[index].texture,
+                        this.shaderMaterialSettings[index].fresnelPower,
+                        this.shaderMaterialSettings[index].fresnelColor
+                    )
+                } else {
+                    convertedMesh.material = this.standardMaterials[index];
+                }
+
                 convertedMesh.layers.enable(this.layer);
                 this.emptyObject.add(convertedMesh);
 
