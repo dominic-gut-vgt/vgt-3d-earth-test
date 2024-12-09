@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Clock, EquirectangularReflectionMapping, Mesh, MeshBasicMaterial, Scene, ShaderMaterial, SphereGeometry, SRGBColorSpace, Vector2, WebGLRenderer } from 'three';
+import { Clock, EquirectangularReflectionMapping, Layers, Mesh, MeshBasicMaterial, ReinhardToneMapping, Scene, ShaderMaterial, SphereGeometry, Vector2, WebGLRenderer } from 'three';
 import { ThreejsMapEnvironmentData } from '../../../shared/data/threejs/threejs-map-environment-data';
 import { CameraController } from './scene-components/scene-environment/camera-controller';
 import { TouchEventHelper } from '../../../shared/classes/touch-event-helper';
@@ -10,7 +10,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GlitchPass } from 'three/addons/postprocessing/GlitchPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { RGBELoader, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addons.js';
+import { FXAAShader, RGBELoader, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addons.js';
 
 @Component({
   selector: 'app-earth',
@@ -29,9 +29,6 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
   markersSet: boolean = false;
 
   threeMapEnvData: ThreejsMapEnvironmentData;
-
-  bloomComposer!: EffectComposer;
-  finalComposer!: EffectComposer;
 
   constructor() {
     super();
@@ -54,10 +51,15 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.isLoopRunning = true;
 
       this.threeMapEnvData.camController?.render();
-      this.bloomComposer?.render();
-      //console.log(this.composer);
+      this.threeMapEnvData.renderer.clear();
 
+      this.threeMapEnvData.camera.layers.set(this.threeMapEnvData.bloomLayer);
+      this.threeMapEnvData.finalComposer.render();
+
+      this.threeMapEnvData.renderer.clearDepth();
+      this.threeMapEnvData.camera.layers.set(0);
       this.threeMapEnvData.renderer.render(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
+
       window.requestAnimationFrame(() => {
         this.isLoopRunning = false;
         if (this.runLoop) {
@@ -66,6 +68,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       });
     }
   }
+
   deInitScene(): void {
     this.runLoop = false;
     while (this.threeMapEnvData.scene.children.length > 0) {
@@ -97,23 +100,12 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.threeMapEnvData.renderer.setClearColor(0x000000, 0);
       this.threeMapEnvData.renderer.setSize(this.threeMapEnvData.width, this.threeMapEnvData.height);
       this.threeMapEnvData.renderer.setPixelRatio(2);
+      // this.threeMapEnvData.renderer.toneMapping = ReinhardToneMapping;
+
       this.threeMapEnvData.renderer.autoClear = false;
-      this.threeMapEnvData.renderer.outputColorSpace = SRGBColorSpace;
 
       this.threeMapEnvData.scene = new Scene();
       this.threeMapEnvData.clock = new Clock();
-
-      /*
-            new RGBELoader().load('textures/hdr/environment.hdr', (map) => {
-              map.mapping = EquirectangularReflectionMapping;
-              this.threeMapEnvData.scene.background = map;
-            })
-            */
-
-      const geometry = new SphereGeometry(0.5, 32, 16);
-      const material = new MeshBasicMaterial({ color: 0xffff00 });
-      const sphere = new Mesh(geometry, material);
-      this.threeMapEnvData.scene.add(sphere);
 
       //class inits----------------------------
       this.threeMapEnvData.camController = new CameraController(this.threeMapEnvData);
@@ -127,69 +119,33 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
       //post processing-----------------------
       //bloom renderer
-      const renderScene = new RenderPass(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
-      const bloomPass = new UnrealBloomPass(
-        new Vector2(window.innerWidth, window.innerHeight),
-        0, 0, 0
-      );
-      bloomPass.threshold = 0.8;
-      bloomPass.strength = 0.4;
-      bloomPass.radius = 0.05;
-      this.bloomComposer = new EffectComposer(this.threeMapEnvData.renderer);
-      this.bloomComposer.setSize(window.innerWidth, window.innerHeight);
+      const renderScene = new RenderPass(this.threeMapEnvData.scene, this.threeMapEnvData.camera)
 
-      this.bloomComposer.addPass(renderScene);
-      this.bloomComposer.addPass(bloomPass);
-      this.bloomComposer.renderToScreen = false;
+      const effectFXAA = new ShaderPass(FXAAShader)
+      effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight)
 
+      const bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85)
+      //bloomSettings
+      bloomPass.threshold = 0.21
+      bloomPass.strength = 1.2
+      bloomPass.radius = 0.55
+      bloomPass.renderToScreen = true
 
-      const mixPass = new ShaderPass(
-        new ShaderMaterial({
-          uniforms: {
-            baseTexture: { value: null },
-            bloomTexture: { value: this.bloomComposer.renderTarget2.texture }
-          },
-          vertexShader: `
-          varying vec2 vUv;
+      this.threeMapEnvData.finalComposer = new EffectComposer(this.threeMapEnvData.renderer)
+      this.threeMapEnvData.finalComposer.setSize(window.innerWidth, window.innerHeight)
 
-			void main() {
+      this.threeMapEnvData.finalComposer.addPass(renderScene)
+      this.threeMapEnvData.finalComposer.addPass(effectFXAA)
+      this.threeMapEnvData.finalComposer.addPass(bloomPass)
 
-				vUv = uv;
+      //this.threeMapEnvData.renderer.gammaInput = true
+      //this.threeMapEnvData.renderer.gammaOutput = true
+      this.threeMapEnvData.renderer.toneMappingExposure = Math.pow(0.9, 4.0)
 
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-
-			}
-          `,
-          fragmentShader: `
-          uniform sampler2D baseTexture;
-			uniform sampler2D bloomTexture;
-
-			varying vec2 vUv;
-
-			void main() {
-
-				gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
-
-			}
-          `,
-          defines: {}
-        }), 'baseTexture'
-      );
-      mixPass.needsSwap = true;
-
-      const outputPass = new OutputPass();
-
-      this.finalComposer = new EffectComposer(this.threeMapEnvData.renderer);
-      this.finalComposer.addPass(renderScene);
-      this.finalComposer.addPass(mixPass);
-      this.finalComposer.addPass(outputPass);
-
-
+      //start loop-----------------------------
+      this.updateAfterResize();
+      this.loop();
     }
-
-    //start loop-----------------------------
-    this.updateAfterResize();
-    this.loop();
   }
 
   subscribeToClassEvents(): void { }

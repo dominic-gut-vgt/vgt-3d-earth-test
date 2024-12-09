@@ -64,6 +64,9 @@ export abstract class MapElement {
     get mouseIsDown(): boolean {
         return this.threeMapEnvData.mouseIsDown;
     }
+    get bloomLayer(): number {
+        return this.threeMapEnvData.bloomLayer;
+    }
     get colors(): Colors {
         return this.threeMapEnvData.colors;
     }

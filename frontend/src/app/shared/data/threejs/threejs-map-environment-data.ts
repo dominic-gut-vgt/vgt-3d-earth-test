@@ -1,6 +1,6 @@
 import { ElementRef, EventEmitter } from "@angular/core";
 import { WebGLRenderer, PerspectiveCamera, Scene, Clock, Vector2, MeshPhongMaterial, MeshBasicMaterial, LineBasicMaterial } from "three";
-import { FontLoader, Font } from "three/examples/jsm/Addons.js";
+import { FontLoader, Font, EffectComposer } from "three/examples/jsm/Addons.js";
 import { CameraController } from "../../../pages/home/earth/scene-components/scene-environment/camera-controller";
 import { Colors } from "../../interfaces/threejs/colors";
 import { Materials } from "../../interfaces/threejs/materials";
@@ -17,12 +17,13 @@ export class ThreejsMapEnvironmentData {
     }
 
     preloadData(): void {
-       
+
     }
 
 
     renderer!: WebGLRenderer;
-    canvas!:HTMLCanvasElement | OffscreenCanvas | undefined;
+    finalComposer!: EffectComposer;
+    canvas!: HTMLCanvasElement | OffscreenCanvas | undefined;
     camera!: PerspectiveCamera;
     cameraControllsMaxDistance: number = 100;
     scene!: Scene;
@@ -43,6 +44,8 @@ export class ThreejsMapEnvironmentData {
     fontStd!: Font;
     //materials---------------------------
 
+    //consts
+    bloomLayer: number = 1;
 
     colors: Colors = {
         colorDark: 0x333333,

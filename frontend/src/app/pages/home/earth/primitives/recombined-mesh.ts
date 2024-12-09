@@ -11,11 +11,12 @@ export class RecombinedMesh extends MapElement {
     shaderMaterialSettings: ShaderMaterialSettings[];
 
     emptyObject!: Object3D;
-
-    constructor(threeMapEnvData: ThreejsMapEnvironmentData, relativeModelPath: string, shaderMaterialSettings: ShaderMaterialSettings[]) {
+    layer: number = 0;
+    constructor(threeMapEnvData: ThreejsMapEnvironmentData, relativeModelPath: string, shaderMaterialSettings: ShaderMaterialSettings[], layer: number) {
         super(threeMapEnvData);
         this.relativeModelPath = relativeModelPath;
         this.shaderMaterialSettings = shaderMaterialSettings;
+        this.layer = layer;
         this.init();
     }
 
@@ -34,7 +35,7 @@ export class RecombinedMesh extends MapElement {
                     this.shaderMaterialSettings[index].fresnelPower,
                     this.shaderMaterialSettings[index].fresnelColor
                 )
-
+                convertedMesh.layers.enable(this.layer);
                 this.emptyObject.add(convertedMesh);
 
             });

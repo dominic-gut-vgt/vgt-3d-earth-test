@@ -14,7 +14,7 @@ export class Earth extends MapElement {
 
     constructor(threeMapEnvData: ThreejsMapEnvironmentData) {
         super(threeMapEnvData);
-        this.init();
+        this.init(); //todo uncomment
     }
 
     deInit(): void {
@@ -38,6 +38,7 @@ export class Earth extends MapElement {
                         fresnelColor: new Vector4(1.0, 0.0, 0.0, 1.0),
                     }
                 ],
+                0
             ),
             new RecombinedMesh(
                 this.threeMapEnvData,
@@ -49,6 +50,7 @@ export class Earth extends MapElement {
                         fresnelColor: new Vector4(1.0, 0.0, 0.0, 1.0),
                     }
                 ],
+                this.bloomLayer,
             ),
             new RecombinedMesh(
                 this.threeMapEnvData,
@@ -60,6 +62,7 @@ export class Earth extends MapElement {
                         fresnelColor: new Vector4(1.0, 1.0, 0.0, 1.0),
                     }
                 ],
+                this.bloomLayer,
             ),
             new RecombinedMesh(
                 this.threeMapEnvData,
@@ -76,6 +79,7 @@ export class Earth extends MapElement {
                         fresnelColor: new Vector4(1.0, 0.0, 0.0, 1.0),
                     }
                 ],
+                0
             )
         );
         this.meshes[0].setPosition(new Vector3(0, -1.5, 0));
