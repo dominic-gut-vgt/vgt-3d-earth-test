@@ -3,22 +3,31 @@ import { ThreejsMapEnvironmentData } from "../../../../shared/data/threejs/three
 import { ShaderMaterialSettings } from "../../../../shared/interfaces/threejs/shader-material-settings";
 import { MapElement } from "../base-classes/map-element";
 import { GLTFAsSeparatedMeshesImporter } from "../importers/gltf-as-separated-meshes-importer";
-import FakeGlowMaterial, { getTexturedFresnelMaterial } from "../scene-components/earth/shader-materials/fresnel-material";
+import FakeGlowMaterial, { getTexturedFresnelMaterial } from "../shader-materials/fresnel-material";
 
-export class RecombinedMesh extends MapElement {
+export class LoadedMesh extends MapElement {
 
     relativeModelPath: string;
     shaderMaterialSettings: ShaderMaterialSettings[];
     emptyObject!: Object3D;
     layer: number = 0;
     standardMaterials: Material[] = [];
+    loadedCallback: Function = () => { };
 
-    constructor(threeMapEnvData: ThreejsMapEnvironmentData, relativeModelPath: string, shaderMaterialSettings: ShaderMaterialSettings[], standardMaterials: Material[], layer: number) {
+    constructor(
+        threeMapEnvData: ThreejsMapEnvironmentData,
+        relativeModelPath: string,
+        shaderMaterialSettings: ShaderMaterialSettings[],
+        standardMaterials: Material[],
+        layer: number,
+        loadedCallback: Function = () => { }
+    ) {
         super(threeMapEnvData);
         this.relativeModelPath = relativeModelPath;
         this.shaderMaterialSettings = shaderMaterialSettings;
         this.standardMaterials = standardMaterials;
         this.layer = layer;
+        this.loadedCallback = loadedCallback;
         this.init();
     }
 
@@ -47,7 +56,7 @@ export class RecombinedMesh extends MapElement {
 
             });
             this.scene?.add(this.emptyObject);
-
+            this.loadedCallback();
         });
     }
 

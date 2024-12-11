@@ -7,7 +7,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { GLTFAsSeparatedMeshesImporter } from '../home/earth/importers/gltf-as-separated-meshes-importer';
-import { getTexturedFresnelMaterial } from '../home/earth/scene-components/earth/shader-materials/fresnel-material';
+import { getTexturedFresnelMaterial } from '../home/earth/shader-materials/fresnel-material';
 
 @Component({
   selector: 'app-test',

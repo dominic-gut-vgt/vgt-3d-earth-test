@@ -1,12 +1,8 @@
-import { DoubleSide, Mesh, MeshStandardMaterial, RawShaderMaterial, Scene, ShaderMaterial, SphereGeometry, TextureLoader, Vector2, Vector3, Vector4 } from "three";
+import { MeshStandardMaterial, Vector3, Vector4 } from "three";
 import { ThreejsMapEnvironmentData } from "../../../../../shared/data/threejs/threejs-map-environment-data";
 import { MapElement } from "../../base-classes/map-element";
-import { SplineImporter } from "../../importers/spline-importer";
-import { color, vec4 } from "three/webgpu";
-import { GLTFLoader, UnrealBloomPass } from "three/examples/jsm/Addons.js";
-import { GLTFAsSeparatedMeshesImporter } from "../../importers/gltf-as-separated-meshes-importer";
-import { getTexturedFresnelMaterial } from "./shader-materials/fresnel-material";
-import { RecombinedMesh } from "../../primitives/recombined-mesh";
+import { EventEmitter, output } from "@angular/core";
+import { LoadedMesh } from "../../primitives/loaded-mesh";
 
 export interface AnimationState {
     endState: {
@@ -20,8 +16,10 @@ export interface AnimationState {
 }
 
 export class Earth extends MapElement {
+    readonly loadedEvent = new EventEmitter<number>(); //emits percentage of loaded meshes
+    private loadedMeshesCount: number = 0;
 
-    private meshes: RecombinedMesh[] = [];
+    private meshes: LoadedMesh[] = [];
 
     animationStates: AnimationState[] = [
         {
@@ -88,7 +86,7 @@ export class Earth extends MapElement {
     override init(): void {
 
         this.meshes.push(
-            new RecombinedMesh(
+            new LoadedMesh(
                 this.threeMapEnvData,
                 'earth/layer-1.glb',
                 [
@@ -104,9 +102,10 @@ export class Earth extends MapElement {
                     }
                 ],
                 [],
-                0
+                0,
+                this.loadedCallback.bind(this),
             ),
-            new RecombinedMesh(
+            new LoadedMesh(
                 this.threeMapEnvData,
                 'earth/layer-2.glb',
                 [
@@ -118,8 +117,9 @@ export class Earth extends MapElement {
                 ],
                 [],
                 this.bloomLayer,
+                this.loadedCallback.bind(this),
             ),
-            new RecombinedMesh(
+            new LoadedMesh(
                 this.threeMapEnvData,
                 'earth/layer-3.glb',
                 [
@@ -131,8 +131,9 @@ export class Earth extends MapElement {
                 ],
                 [],
                 this.bloomLayer,
+                this.loadedCallback.bind(this),
             ),
-            new RecombinedMesh(
+            new LoadedMesh(
                 this.threeMapEnvData,
                 'earth/layer-4.glb',
                 [],
@@ -144,8 +145,9 @@ export class Earth extends MapElement {
                     })
                 ],
                 this.bloomLayer,
+                this.loadedCallback.bind(this),
             ),
-            new RecombinedMesh(
+            new LoadedMesh(
                 this.threeMapEnvData,
                 'earth/layer-1-top.glb',
                 [
@@ -161,10 +163,29 @@ export class Earth extends MapElement {
                     }
                 ],
                 [],
-                0
+                0,
+                this.loadedCallback.bind(this),
             )
         );
     }
+
+    loadedCallback(): void {
+        this.loadedMeshesCount++;
+        console.log(this.loadedMeshesCount,this.meshes.length);
+        this.loadedEvent.emit((this.loadedMeshesCount / this.meshes.length) * 100);
+    }
+    
+    render(playAnimation:boolean): void {
+        const animationDonePercentage: number = this.currentAnimationTimeFrameCount / this.totalAnimationFrameCount;
+        if (animationDonePercentage <= 1) {
+            this.meshes.forEach((mesh, ind) => {
+                this.animationStates[ind].currentState.position.copy(this.animationStates[ind].endState.position.clone().multiplyScalar(this.getEasedNumber(animationDonePercentage)))
+                mesh.setPosition(this.animationStates[ind].currentState.position);
+            });
+            this.currentAnimationTimeFrameCount++;
+        }
+    }
+
 
     /**
      * @param t number [0,1]
@@ -172,19 +193,6 @@ export class Earth extends MapElement {
      */
     getEasedNumber(t: number): number {
         return t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
-
-    render(): void {
-        const animationDonePercentage: number = this.currentAnimationTimeFrameCount / this.totalAnimationFrameCount;
-        if (animationDonePercentage <= 1) {
-            this.meshes.forEach((mesh, ind) => {
-                this.animationStates[ind].currentState.position.copy(this.animationStates[ind].endState.position.clone().multiplyScalar(this.getEasedNumber(animationDonePercentage)))
-                mesh.setPosition(this.animationStates[ind].currentState.position);
-                console.log(this.animationStates[ind].endState.position);
-
-            });
-            this.currentAnimationTimeFrameCount++;
-        }
     }
 
 
