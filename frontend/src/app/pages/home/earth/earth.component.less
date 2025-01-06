@@ -1,48 +1,56 @@
-.scroll-container {
+.canvas-container {
+    width: 100dvw;
+    height: 100dvh;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background-color: black;
 
-    .canvas-container {
+    .canvas {
+        width: 100%;
+        height: 100%
+    }
+
+    .loading-overlay {
         width: 100dvw;
         height: 100dvh;
-        position: absolute;
-        top:0px;
+        position: fixed;
+        top: 0px;
         left: 0px;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
         background-color: black;
+        opacity: 0;
+        transform: translateX(100dvw);
+        transition: 0.4s opacity, 0.4s transform 0.4s;
 
-        .canvas {
-            width: 100dvw;
-            height: 100dvh;
-            position: fixed;
-            top: 0px;
-            left: 0px;
+        p,
+        h3 {
+            color: white;
         }
+    }
 
-        .loading-overlay {
-            width: 100dvw;
-            height: 100dvh;
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+    .loading-overlay.show {
+        opacity: 1;
+        transform: translateX(0px);
+    }
 
-            background-color: black;
-            opacity: 0;
-            transform: translateX(100dvw);
-            transition: 0.4s opacity,0.4s transform 0.4s;
+}
 
-            p,
-            h3 {
-                color: white;
-            }
-        }
+.scroll-container {
+    position: absolute;
+    width: 100%;
+        top: 0px;
+    left: 0px;
+    z-index: 2;
+    max-height: 100dvh;
+    overflow-y: scroll;
 
-        .loading-overlay.show {
-            opacity: 1;
-            transform: translateX(0px);
-        }
-    
+    .animation-length-spacer {
+        height: 300dvh;
     }
 }

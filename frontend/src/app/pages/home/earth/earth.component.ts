@@ -29,7 +29,9 @@ type Dictionary<T> = {
 export class EarthComponent extends TouchEventHelper implements OnInit, OnDestroy {
 
   //Viewchildren
-  @ViewChild("canvas") canvasElem!: ElementRef;
+  @ViewChild('canvas') canvasElem!: ElementRef;
+  @ViewChild('scrollContainerElem') scrollContainerElemRef!: ElementRef;
+
 
   //data
   private loadedPercentages: Dictionary<number> = {
@@ -148,6 +150,8 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       //events---------------------------------
       this.subscribeToClassEvents();
       this.subscribeToTouchEvents();
+      this.subscribeToElemRefEvents();
+
       this.setMapSize(new Vector2(window.innerWidth, window.innerHeight));
 
       //post processing-----------------------
@@ -180,6 +184,17 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.loop();
     }
   }
+
+  subscribeToElemRefEvents(): void {
+    console.log(this.scrollContainerElemRef);
+    this.scrollContainerElemRef.nativeElement.addEventListener('scroll', (event: any) => {
+      console.log(event);
+    })
+    this.scrollContainerElemRef.nativeElement.addEventListener('click', (event: any) => {
+      console.log(event);
+    })
+  }
+
 
   subscribeToClassEvents(): void {
     if (this.threeMapEnvData.earth) {
