@@ -137,7 +137,8 @@ export class TestComponent {
         convertedMesh.material = getTexturedFresnelMaterial(
           shaderMaterialSettings[index].texture,
           shaderMaterialSettings[index].fresnelPower,
-          shaderMaterialSettings[index].fresnelColor
+          shaderMaterialSettings[index].fresnelColor,
+          ()=>{}
         )
         convertedMesh.layers.enable(this.BLOOM_SCENE)
         this.scene.add(convertedMesh);

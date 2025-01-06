@@ -39,16 +39,25 @@ export class LoadedMesh extends MapElement {
         const gltfImporter = new GLTFAsSeparatedMeshesImporter();
 
         gltfImporter.loadModel(this.relativeModelPath, (meshes: any) => {
+            let loadedMaterials: number = 0;
             meshes.forEach((mesh: Mesh, index: number) => {
                 const convertedMesh: Mesh = mesh.clone();
                 if (this.shaderMaterialSettings.length) {
                     convertedMesh.material = getTexturedFresnelMaterial(
                         this.shaderMaterialSettings[index].texture,
                         this.shaderMaterialSettings[index].fresnelPower,
-                        this.shaderMaterialSettings[index].fresnelColor
+                        this.shaderMaterialSettings[index].fresnelColor,
+                        () => {
+                            loadedMaterials++;
+                            console.log(loadedMaterials);
+                            if (loadedMaterials === meshes.length) {
+                                this.loadedCallback();
+                            }
+                        }
                     )
                 } else {
                     convertedMesh.material = this.standardMaterials[index];
+                    this.loadedCallback();
                 }
 
                 convertedMesh.layers.enable(this.layer);
@@ -56,7 +65,6 @@ export class LoadedMesh extends MapElement {
 
             });
             this.scene?.add(this.emptyObject);
-            this.loadedCallback();
         });
     }
 

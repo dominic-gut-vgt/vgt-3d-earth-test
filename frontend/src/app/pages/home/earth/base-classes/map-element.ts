@@ -13,7 +13,7 @@ export abstract class MapElement {
     }
 
     abstract init(): void;
-    abstract render(): void;
+    abstract render(animationDonePercentage:number): void;
     abstract resize(): void;
 
     get threeMapEnvData(): ThreejsMapEnvironmentData {

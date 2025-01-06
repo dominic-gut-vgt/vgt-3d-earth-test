@@ -1,9 +1,9 @@
 import { NormalBlending, ShaderMaterial, TextureLoader, Vector2, Vector4 } from "three"
 
-export function getTexturedFresnelMaterial(texturePath: string, fresnelPower: number, fresnelColor: Vector4): ShaderMaterial {
+export function getTexturedFresnelMaterial(texturePath: string, fresnelPower: number, fresnelColor: Vector4,textureLoadedCallback:Function): ShaderMaterial {
 
     const textureLoader = new TextureLoader();
-    let texture = textureLoader.load(texturePath);
+    let texture = textureLoader.load(texturePath,()=>{textureLoadedCallback()});
 
     return new ShaderMaterial({
         uniforms: {
@@ -51,9 +51,9 @@ export function getTexturedFresnelMaterial(texturePath: string, fresnelPower: nu
 }
 
 
-export function getBasicTexturedShaderMaterial(texturePath: string, flip: Vector2): ShaderMaterial {
+export function getBasicTexturedShaderMaterial(texturePath: string, flip: Vector2,textureLoadedCallback:Function): ShaderMaterial {
     const textureLoader = new TextureLoader();
-    const texture = textureLoader.load(texturePath);
+    const texture = textureLoader.load(texturePath,()=>{textureLoadedCallback()});
 
     return new ShaderMaterial({
         uniforms: {

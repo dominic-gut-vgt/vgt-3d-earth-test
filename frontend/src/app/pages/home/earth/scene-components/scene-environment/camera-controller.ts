@@ -50,7 +50,7 @@ export class CameraController extends MapElement {
             this.controls = new OrbitControls(this.camera, this.renderer.domElement);
             this.controls.maxDistance = this.cameraControllsMaxDistance;
             this.controls.minDistance = 6;
-            this.controls.zoomSpeed = 2;
+            this.controls.enableZoom = false;
             this.controls.enablePan = false;
             this.controls.enableDamping = true;
         }
@@ -58,7 +58,7 @@ export class CameraController extends MapElement {
         this.scene?.add(this.cam);
     }
 
-    override render(): void {
+    override render(animationDonePercentage: number): void {
 
         this.controls.update();
     }

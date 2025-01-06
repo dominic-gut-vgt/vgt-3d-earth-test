@@ -1,5 +1,5 @@
 import { Component, computed, ElementRef, HostListener, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
-import { Clock, Scene,  Vector2, WebGLRenderer } from 'three';
+import { Clock, Scene, Vector2, WebGLRenderer } from 'three';
 import { ThreejsMapEnvironmentData } from '../../../shared/data/threejs/threejs-map-environment-data';
 import { CameraController } from './scene-components/scene-environment/camera-controller';
 import { TouchEventHelper } from '../../../shared/classes/touch-event-helper';
@@ -12,6 +12,7 @@ import { FXAAShader, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addo
 import { Subscription } from 'rxjs';
 import { SCENE_ENVIRONMENT_ELEMENT_TYPE } from '../../../shared/enums/threejs/scene-environment-element-type';
 import { compute } from 'three/webgpu';
+import { CommonModule } from '@angular/common';
 
 type Dictionary<T> = {
   [key in SCENE_ENVIRONMENT_ELEMENT_TYPE]: T
@@ -21,30 +22,38 @@ type Dictionary<T> = {
 @Component({
   selector: 'app-earth',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './earth.component.html',
   styleUrl: './earth.component.less'
 })
 export class EarthComponent extends TouchEventHelper implements OnInit, OnDestroy {
+
+  //Viewchildren
   @ViewChild("canvas") canvasElem!: ElementRef;
-  @ViewChild("splineCanvas") splineCanvasElem!: ElementRef;
 
-  private runLoop: boolean = true;
-  private isLoopRunning: boolean = false;
-  private subscriptions: Subscription[] = [];
-
-  loadedPercentages: Dictionary<number> = {
+  //data
+  private loadedPercentages: Dictionary<number> = {
     [SCENE_ENVIRONMENT_ELEMENT_TYPE.EARTH]: 0,
     //[SCENE_ENVIRONMENT_ELEMENT_TYPE.SATELITES]: 0
   };
-  totalLoadedPercentage = signal<number>(0);
-  allSceneComponentsLoaded=computed<boolean>(()=>{
-    return Math.round(this.totalLoadedPercentage())===100;
+  protected totalLoadedPercentage = signal<number>(0);
+  private threeMapEnvData: ThreejsMapEnvironmentData;
+  private subscriptions: Subscription[] = [];
+
+  //animation
+  private totalAnimationFrameCount: number = 100;
+  private currentAnimationTimeFrameCount = signal<number>(0);
+  private animationPercentage = computed<number>(() => {
+    return this.currentAnimationTimeFrameCount() / this.totalAnimationFrameCount
   });
 
-  markersSet: boolean = false;
+  //flags
+  private runLoop: boolean = true;
+  private isLoopRunning: boolean = false;
+  protected allSceneComponentsLoaded = computed<boolean>(() => {
+    return Math.round(this.totalLoadedPercentage()) === 100;
+  });
 
-  threeMapEnvData: ThreejsMapEnvironmentData;
 
   constructor() {
     super();
@@ -67,7 +76,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.isLoopRunning = true;
 
       //handling of layers----------------------------------
-      this.threeMapEnvData.camController?.render();
+      this.threeMapEnvData.camController?.render(this.animationPercentage());
       this.threeMapEnvData.renderer.clear();
 
       this.threeMapEnvData.camera.layers.set(this.threeMapEnvData.bloomLayer);
@@ -78,7 +87,9 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.threeMapEnvData.renderer.render(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
 
       //render scene components-----------------------------
-      this.threeMapEnvData.earth?.render(this.allSceneComponentsLoaded());
+      if (this.allSceneComponentsLoaded()) {
+        this.threeMapEnvData.earth?.render(this.animationPercentage());
+      }
 
       window.requestAnimationFrame(() => {
         this.isLoopRunning = false;
@@ -113,7 +124,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     if (this.threeMapEnvData.renderer == null) {
 
       //init renderer-------------------------
-      this.threeMapEnvData.canvas = this.splineCanvasElem.nativeElement;
+      this.threeMapEnvData.canvas = this.canvasElem.nativeElement;
       this.threeMapEnvData.renderer = new WebGLRenderer({
         antialias: true,
         canvas: this.canvasElem.nativeElement,
@@ -172,10 +183,12 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
   subscribeToClassEvents(): void {
     if (this.threeMapEnvData.earth) {
-      this.subscriptions.push(this.threeMapEnvData.earth.loadedEvent.subscribe((percentage) => {
-        this.loadedPercentages[SCENE_ENVIRONMENT_ELEMENT_TYPE.EARTH] = percentage;
-        this.calculateTotalLoadedPercentage();
-      }));
+      this.subscriptions.push(
+        this.threeMapEnvData.earth.loadedEvent.subscribe((percentage) => {
+          this.loadedPercentages[SCENE_ENVIRONMENT_ELEMENT_TYPE.EARTH] = percentage;
+          this.calculateTotalLoadedPercentage();
+        }),
+      );
     }
   }
 
@@ -203,7 +216,6 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
   calculateTotalLoadedPercentage(): void {
     this.totalLoadedPercentage.set(Object.values(this.loadedPercentages).reduce((sum, value) => sum + value) / Object.keys(this.loadedPercentages).length);
-    console.log(this.totalLoadedPercentage());
   }
 
   onClick(): void {

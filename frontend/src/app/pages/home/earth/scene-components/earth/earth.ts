@@ -21,7 +21,7 @@ export class Earth extends MapElement {
 
     private meshes: LoadedMesh[] = [];
 
-    animationStates: AnimationState[] = [
+    private animationStates: AnimationState[] = [
         {
             endState: {
                 position: new Vector3(0, -1.4, 0),
@@ -73,8 +73,7 @@ export class Earth extends MapElement {
             }
         },
     ];
-    totalAnimationFrameCount: number = 100;
-    currentAnimationTimeFrameCount: number = 0;
+
 
     constructor(threeMapEnvData: ThreejsMapEnvironmentData) {
         super(threeMapEnvData);
@@ -171,18 +170,17 @@ export class Earth extends MapElement {
 
     loadedCallback(): void {
         this.loadedMeshesCount++;
-        console.log(this.loadedMeshesCount,this.meshes.length);
+        console.log(this.loadedMeshesCount, this.meshes.length);
         this.loadedEvent.emit((this.loadedMeshesCount / this.meshes.length) * 100);
     }
-    
-    render(playAnimation:boolean): void {
-        const animationDonePercentage: number = this.currentAnimationTimeFrameCount / this.totalAnimationFrameCount;
+
+    render(animationDonePercentage: number): void {
         if (animationDonePercentage <= 1) {
             this.meshes.forEach((mesh, ind) => {
                 this.animationStates[ind].currentState.position.copy(this.animationStates[ind].endState.position.clone().multiplyScalar(this.getEasedNumber(animationDonePercentage)))
                 mesh.setPosition(this.animationStates[ind].currentState.position);
             });
-            this.currentAnimationTimeFrameCount++;
+            // this.currentAnimationTimeFrameCount++;
         }
     }
 

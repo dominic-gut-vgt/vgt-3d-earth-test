@@ -1,12 +1,48 @@
+.scroll-container {
 
-.canvas {
-    width: 100dvw;
-    height: 100dvh;
-    position: absolute;
-    background-color: black;
-}
+    .canvas-container {
+        width: 100dvw;
+        height: 100dvh;
+        position: absolute;
+        top:0px;
+        left: 0px;
+        background-color: black;
 
-.spline-canvas{
-    width: 0px;
-    height: 0px;
+        .canvas {
+            width: 100dvw;
+            height: 100dvh;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+        }
+
+        .loading-overlay {
+            width: 100dvw;
+            height: 100dvh;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            background-color: black;
+            opacity: 0;
+            transform: translateX(100dvw);
+            transition: 0.4s opacity,0.4s transform 0.4s;
+
+            p,
+            h3 {
+                color: white;
+            }
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            transform: translateX(0px);
+        }
+    
+    }
 }
