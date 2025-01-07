@@ -13,7 +13,7 @@ export abstract class MapElement {
     }
 
     abstract init(): void;
-    abstract render(animationDonePercentage:number): void;
+    abstract render(): void;
     abstract resize(): void;
 
     get threeMapEnvData(): ThreejsMapEnvironmentData {
@@ -72,5 +72,23 @@ export abstract class MapElement {
     }
     get materials(): Materials {
         return this.threeMapEnvData.materials;
+    }
+
+    //animation--------------------------------------
+    get currentAnimationFrame(): number {
+        return this.threeMapEnvData.currentAnimationFrame;
+    }
+    set currentAnimationFrame(currentAnimationFrame: number) {
+        this.threeMapEnvData.currentAnimationFrame = currentAnimationFrame;
+    }
+    get animationFrameCount(): number {
+        return this.threeMapEnvData.animationFrameCount;
+    }
+    set animationFrameCount(animationFrameCount: number) {
+        this.threeMapEnvData.animationFrameCount = animationFrameCount;
+    }
+
+    public calculateAnimationPercentage(frameDelay: number): number {
+        return (this.threeMapEnvData.currentAnimationFrame - frameDelay) / this.animationFrameCount
     }
 }

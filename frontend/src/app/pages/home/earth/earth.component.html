@@ -1,13 +1,12 @@
+<div class="animation-container" [ngStyle]="{'height':(threeMapEnvData.animationFrameCount)+'px'}">
+    <div class="sticky">
+        <div class="canvas-container">
+            <canvas #canvas class="canvas"></canvas>
 
-<div class="canvas-container">
-    <canvas #canvas class="canvas"></canvas>
-
-    <div [ngClass]="!allSceneComponentsLoaded()?'loading-overlay show':'loading-overlay'">
-        <p>loading</p>
-        <h3>{{totalLoadedPercentage()}}%</h3>
+            <div [ngClass]="!allSceneComponentsLoaded()?'loading-overlay show':'loading-overlay'">
+                <p>loading</p>
+                <h3>{{totalLoadedPercentage()}}%</h3>
+            </div>
+        </div>
     </div>
-</div>
-<div #scrollContainerElem class="scroll-container">
-    <div class="animation-length-spacer"></div>
-
 </div>

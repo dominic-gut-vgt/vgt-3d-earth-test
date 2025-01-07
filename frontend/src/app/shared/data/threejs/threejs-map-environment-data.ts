@@ -33,6 +33,15 @@ export class ThreejsMapEnvironmentData {
     prevMousePos: Vector2 = new Vector2();
     mousePos: Vector2 = new Vector2();
     mouseIsDown: boolean = false;
+    /**
+  * @description adjust this to change animation duration
+  */
+    animationFrameCount: number = 10000;
+    /**
+     * @description animationPercentage is based on scroll height and animationContainerHeight
+     */
+    currentAnimationFrame: number = 0;
+
 
     //custom classes----------------------
     camController!: CameraController | null;

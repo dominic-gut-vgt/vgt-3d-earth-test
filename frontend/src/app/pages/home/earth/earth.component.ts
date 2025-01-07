@@ -11,13 +11,11 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { FXAAShader, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addons.js';
 import { Subscription } from 'rxjs';
 import { SCENE_ENVIRONMENT_ELEMENT_TYPE } from '../../../shared/enums/threejs/scene-environment-element-type';
-import { compute } from 'three/webgpu';
 import { CommonModule } from '@angular/common';
 
 type Dictionary<T> = {
   [key in SCENE_ENVIRONMENT_ELEMENT_TYPE]: T
 }
-
 
 @Component({
   selector: 'app-earth',
@@ -39,15 +37,10 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     //[SCENE_ENVIRONMENT_ELEMENT_TYPE.SATELITES]: 0
   };
   protected totalLoadedPercentage = signal<number>(0);
-  private threeMapEnvData: ThreejsMapEnvironmentData;
+  protected threeMapEnvData: ThreejsMapEnvironmentData = new ThreejsMapEnvironmentData();
   private subscriptions: Subscription[] = [];
 
-  //animation
-  private totalAnimationFrameCount: number = 100;
-  private currentAnimationTimeFrameCount = signal<number>(0);
-  private animationPercentage = computed<number>(() => {
-    return this.currentAnimationTimeFrameCount() / this.totalAnimationFrameCount
-  });
+
 
   //flags
   private runLoop: boolean = true;
@@ -59,7 +52,6 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
   constructor() {
     super();
-    this.threeMapEnvData = new ThreejsMapEnvironmentData();
   }
 
   ngOnInit() {
@@ -78,7 +70,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.isLoopRunning = true;
 
       //handling of layers----------------------------------
-      this.threeMapEnvData.camController?.render(this.animationPercentage());
+      this.threeMapEnvData.camController?.render();
       this.threeMapEnvData.renderer.clear();
 
       this.threeMapEnvData.camera.layers.set(this.threeMapEnvData.bloomLayer);
@@ -90,7 +82,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
 
       //render scene components-----------------------------
       if (this.allSceneComponentsLoaded()) {
-        this.threeMapEnvData.earth?.render(this.animationPercentage());
+        this.threeMapEnvData.earth?.render();
       }
 
       window.requestAnimationFrame(() => {
@@ -150,7 +142,6 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       //events---------------------------------
       this.subscribeToClassEvents();
       this.subscribeToTouchEvents();
-      this.subscribeToElemRefEvents();
 
       this.setMapSize(new Vector2(window.innerWidth, window.innerHeight));
 
@@ -185,17 +176,8 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     }
   }
 
-  subscribeToElemRefEvents(): void {
-    console.log(this.scrollContainerElemRef);
-    this.scrollContainerElemRef.nativeElement.addEventListener('scroll', (event: any) => {
-      console.log(event);
-    })
-    this.scrollContainerElemRef.nativeElement.addEventListener('click', (event: any) => {
-      console.log(event);
-    })
-  }
 
-
+  //subscriptions-----------------------------
   subscribeToClassEvents(): void {
     if (this.threeMapEnvData.earth) {
       this.subscriptions.push(
@@ -243,12 +225,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     this.threeMapEnvData.height = mapSize.y;
     this.updateAfterResize();
   }
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-    this.threeMapEnvData.width = document.body.clientWidth;
-    this.threeMapEnvData.height = window.innerHeight;
-    this.updateAfterResize();
-  }
+
   updateAfterResize(): void {
     this.threeMapEnvData.boundingClientRect = this.canvasElem.nativeElement.getBoundingClientRect();
 
@@ -264,4 +241,19 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       this.threeMapEnvData.renderer.render(this.threeMapEnvData.scene, this.threeMapEnvData.camera);
     }
   }
+
+
+  //hostlisteners----------------------------
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll() {
+    this.threeMapEnvData.currentAnimationFrame = window.scrollY;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.threeMapEnvData.width = document.body.clientWidth;
+    this.threeMapEnvData.height = window.innerHeight;
+    this.updateAfterResize();
+  }
+
 }

@@ -49,7 +49,6 @@ export class LoadedMesh extends MapElement {
                         this.shaderMaterialSettings[index].fresnelColor,
                         () => {
                             loadedMaterials++;
-                            console.log(loadedMaterials);
                             if (loadedMaterials === meshes.length) {
                                 this.loadedCallback();
                             }
@@ -62,7 +61,6 @@ export class LoadedMesh extends MapElement {
 
                 convertedMesh.layers.enable(this.layer);
                 this.emptyObject.add(convertedMesh);
-
             });
             this.scene?.add(this.emptyObject);
         });

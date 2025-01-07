@@ -58,7 +58,7 @@ export class CameraController extends MapElement {
         this.scene?.add(this.cam);
     }
 
-    override render(animationDonePercentage: number): void {
+    override render(): void {
 
         this.controls.update();
     }
