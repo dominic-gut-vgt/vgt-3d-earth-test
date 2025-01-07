@@ -4,6 +4,7 @@ import { Font } from "three/examples/jsm/Addons.js";
 import { ThreejsMapEnvironmentData } from "../../../../shared/data/threejs/threejs-map-environment-data";
 import { Colors } from "../../../../shared/interfaces/threejs/colors";
 import { Materials } from "../../../../shared/interfaces/threejs/materials";
+import { AnimationStateData } from "../../../../shared/interfaces/threejs/animation-state";
 
 export abstract class MapElement {
     tmed!: ThreejsMapEnvironmentData;
@@ -88,7 +89,17 @@ export abstract class MapElement {
         this.threeMapEnvData.animationFrameCount = animationFrameCount;
     }
 
-    public calculateAnimationPercentage(frameDelay: number=0, speedFac: number = 1): number {
+    /**
+     * @description animates between states of animationStateData and updates current state of animationStateData
+     * @param animationStateData state data
+     * @param delay start delay in frames 
+     * @param speedFac factor to speed up or slow down animation
+     */
+    public animateBetweenAnimationStates(animationStateData: AnimationStateData,delay:number,speedFac:number): void {
+
+    }
+
+    private calculateAnimationPercentage(frameDelay: number = 0, speedFac: number = 1): number {
         return Math.max(0, Math.min(((this.threeMapEnvData.currentAnimationFrame - frameDelay) / this.animationFrameCount) * speedFac, 1));
     }
 

@@ -3,28 +3,22 @@ import { Vector3 } from "three"
 export interface AnimationState {
   position: Vector3,
   rotation: Vector3,
+  percentage: number | null, //percentage when this state is reached
 }
 
 export class AnimationStateData {
-  startState: AnimationState = {
-    position: new Vector3(),
-    rotation: new Vector3(),
-  }
-  endState: AnimationState = {
-    position: new Vector3(),
-    rotation: new Vector3(),
-  }
+  states: AnimationState[] = [];
   currentState: AnimationState = {
     position: new Vector3(),
     rotation: new Vector3(),
+    percentage: null,
   }
-  constructor(startState: AnimationState, endState: AnimationState) {
-    this.startState = startState;
-    this.endState = endState;
-    
+  constructor(states: AnimationState[]) {
+   this.states=states
+
     //init current state
-    this.currentState.position.copy(startState.position);
-    this.currentState.rotation.copy(startState.rotation);
+    this.currentState.position.copy(states[0].position);
+    this.currentState.rotation.copy(states[0].rotation);
 
   }
 }

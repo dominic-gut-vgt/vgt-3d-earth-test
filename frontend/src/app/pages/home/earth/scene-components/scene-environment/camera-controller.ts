@@ -12,15 +12,18 @@ export class CameraController extends MapElement {
     private controls!: OrbitControls;
 
 
-    private animationState: AnimationStateData = new AnimationStateData(
+    private animationStateData: AnimationStateData = new AnimationStateData([
         {
             position: new Vector3(0, 0, this.cameraControllsMaxDistance),
             rotation: new Vector3(0, 0, -Math.PI / 4),
+            percentage: 0,
         },
         {
             position: new Vector3(0, 0, this.cameraControllsMaxDistance / 10),
             rotation: new Vector3(0, 0, Math.PI / 3),
-        });
+            percentage: 1
+        }
+    ]);
 
     cameraDistanceUpdatedEvent: EventEmitter<number> = new EventEmitter<number>();
 
@@ -55,16 +58,15 @@ export class CameraController extends MapElement {
 
 
     override render(): void {
-        const animationPercentage = this.calculateAnimationPercentage(0);
-
-        this.animationState.currentState.position.lerpVectors(this.animationState.startState.position, this.animationState.endState.position, this.getEasedNumber(animationPercentage));
-        this.animationState.currentState.rotation.lerpVectors(this.animationState.startState.rotation, this.animationState.endState.rotation, this.getEasedNumber(animationPercentage));
+        this.animateBetweenAnimationStates(this.animationStateData,0,0);
+       // this.animationState.currentState.position.lerpVectors(this.animationState.startState.position, this.animationState.endState.position, this.getEasedNumber(animationPercentage));
+       // this.animationState.currentState.rotation.lerpVectors(this.animationState.startState.rotation, this.animationState.endState.rotation, this.getEasedNumber(animationPercentage));
         this.updateCamera();
     }
 
     private updateCamera(): void {
-        this.camera?.position.copy(this.animationState.currentState.position);
-        this.camera?.rotation.set(this.animationState.currentState.rotation.x, this.animationState.currentState.rotation.y, this.animationState.currentState.rotation.z);
+        this.camera?.position.copy(this.animationStateData.currentState.position);
+        this.camera?.rotation.set(this.animationStateData.currentState.rotation.x, this.animationStateData.currentState.rotation.y, this.animationStateData.currentState.rotation.z);
         // this.controls.update();
     }
 
