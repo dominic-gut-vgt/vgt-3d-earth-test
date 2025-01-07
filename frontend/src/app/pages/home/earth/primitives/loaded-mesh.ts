@@ -69,6 +69,9 @@ export class LoadedMesh extends MapElement {
     setPosition(pos: Vector3): void {
         this.emptyObject.position.copy(pos)
     }
+    setRotation(rotation: Vector3): void {
+        this.emptyObject.rotation.set(rotation.x,rotation.y,rotation.z)
+    }
 
     override render(): void {
     }

@@ -88,7 +88,17 @@ export abstract class MapElement {
         this.threeMapEnvData.animationFrameCount = animationFrameCount;
     }
 
-    public calculateAnimationPercentage(frameDelay: number): number {
-        return (this.threeMapEnvData.currentAnimationFrame - frameDelay) / this.animationFrameCount
+    public calculateAnimationPercentage(frameDelay: number=0, speedFac: number = 1): number {
+        return Math.max(0, Math.min(((this.threeMapEnvData.currentAnimationFrame - frameDelay) / this.animationFrameCount) * speedFac, 1));
+    }
+
+
+
+    /**
+   * @param t number [0,1]
+   * @returns eased number t [0,1]
+   */
+    getEasedNumber(t: number): number {
+        return t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 }

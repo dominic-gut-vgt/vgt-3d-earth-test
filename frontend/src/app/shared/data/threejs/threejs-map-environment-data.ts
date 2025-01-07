@@ -24,7 +24,7 @@ export class ThreejsMapEnvironmentData {
     finalComposer!: EffectComposer;
     canvas!: HTMLCanvasElement | OffscreenCanvas | undefined;
     camera!: PerspectiveCamera;
-    cameraControllsMaxDistance: number = 100;
+    cameraControllsMaxDistance: number = 200;
     scene!: Scene;
     clock!: Clock;
     width: number = 0;// width of map (not screen)

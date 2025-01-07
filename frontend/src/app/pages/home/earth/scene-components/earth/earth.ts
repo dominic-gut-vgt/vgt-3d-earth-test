@@ -18,36 +18,29 @@ export class Earth extends MapElement {
         this.init(); //todo uncomment
     }
 
-    render(): void {
-        const animationPercentage: number = this.calculateAnimationPercentage(400)*4;
-        
-        console.log(this.currentAnimationFrame);
-        if (animationPercentage <= 1) {
-            this.meshes.forEach((mesh, ind) => {
-                this.earthAnimationStates[ind].currentState.position.copy(this.earthAnimationStates[ind].endState.position.clone().multiplyScalar(this.getEasedNumber(animationPercentage)))
-                mesh.setPosition(this.earthAnimationStates[ind].currentState.position);
-            });
-        }
-    }
+    public render(): void {
+        const animationPercentageDelayedAndSpeedUp: number = this.calculateAnimationPercentage(1000, 4);
+        const animationPercentage: number = this.calculateAnimationPercentage();
 
-    /**
-     * @param t number [0,1]
-     * @returns eased number t [0,1]
-     */
-    getEasedNumber(t: number): number {
-        return t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
+        this.meshes.forEach((mesh, ind) => {
+            //lerp between start and end position
+            this.earthAnimationStates[ind].currentState.position.lerpVectors(this.earthAnimationStates[ind].startState.position, this.earthAnimationStates[ind].endState.position, this.getEasedNumber(animationPercentageDelayedAndSpeedUp));
+            //lerp between start and end rotation
+            this.earthAnimationStates[ind].currentState.rotation.lerpVectors(this.earthAnimationStates[ind].startState.rotation, this.earthAnimationStates[ind].endState.rotation, this.getEasedNumber(animationPercentage));
 
+            mesh.setPosition(this.earthAnimationStates[ind].currentState.position);
+            mesh.setRotation(this.earthAnimationStates[ind].currentState.rotation);
+        });
 
-    onClick(): void {
 
     }
 
-    resize(): void {
-    }
+    public onClick(): void { }
+
+    resize(): void { }
 
     //init-------------------------------
-    deInit(): void { }
+    public deInit(): void { }
 
     override init(): void {
 
