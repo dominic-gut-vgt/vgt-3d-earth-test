@@ -126,9 +126,10 @@ export class Earth extends MapElement {
             )
         );
 
-        for (let i = 0; i < 10; i++) {
+        const sateliteAmount: number = 3;
+        for (let i = 0; i < sateliteAmount / 2; i++) { 
             this.satellites.push(
-                new Satellite(this.threeMapEnvData, this.meshes[0], this.loadedCallback.bind(this))
+                new Satellite(this.threeMapEnvData, [this.meshes[0], this.meshes[this.meshes.length - 1]], this.loadedCallback.bind(this))
             );
         }
     }

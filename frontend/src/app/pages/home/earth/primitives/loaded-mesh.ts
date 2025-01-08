@@ -66,6 +66,10 @@ export class LoadedMesh extends MapElement {
         });
     }
 
+    public addPinnedMesh(objectToPin:Mesh):void{
+        this.emptyObject.add(objectToPin)
+    }
+
     public setPosition(pos: Vector3): void {
         this.emptyObject.position.copy(pos)
     }
@@ -82,5 +86,15 @@ export class LoadedMesh extends MapElement {
     override render(): void {
     }
     override resize(): void {
+    }
+
+    
+
+    //getters
+    getPos():Vector3{
+        return new Vector3().copy(this.emptyObject.position)
+    }
+    getRotation():Vector3{
+        return new Vector3().copy(this.emptyObject.rotation)
     }
 }
