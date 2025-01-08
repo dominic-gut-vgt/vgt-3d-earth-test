@@ -1,29 +1,17 @@
-import { Euler, MathUtils, PerspectiveCamera, Vector2, Vector3 } from "three";
+import { PerspectiveCamera, Vector3 } from "three";
 import { MapElement } from "../../base-classes/map-element";
 import { EventEmitter } from "@angular/core";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import { ThreejsMapEnvironmentData } from "../../../../../shared/data/threejs/threejs-map-environment-data";
 import { AnimationState, AnimationStateData } from "../../../../../shared/interfaces/threejs/animation-state";
-
+import { getCameraControllerAnimationStateData } from "../../animation-states/camera-controller-animation-state-data";
 
 export class CameraController extends MapElement {
 
     private cam!: PerspectiveCamera;
     private controls!: OrbitControls;
 
-
-    private animationStateData: AnimationStateData = new AnimationStateData([
-        {
-            position: new Vector3(0, 0, this.cameraControllsMaxDistance),
-            rotation: new Vector3(0, 0, -Math.PI / 4),
-            percentage: 0,
-        },
-        {
-            position: new Vector3(0, 0, this.cameraControllsMaxDistance / 10),
-            rotation: new Vector3(0, 0, Math.PI / 3),
-            percentage: 1
-        }
-    ]);
+    private animationStateData: AnimationStateData = getCameraControllerAnimationStateData(this.cameraControllsMaxDistance);
 
     cameraDistanceUpdatedEvent: EventEmitter<number> = new EventEmitter<number>();
 
@@ -46,7 +34,7 @@ export class CameraController extends MapElement {
 
         if (this.renderer != null) {
             this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-            this.controls.minDistance = 6;
+            // this.controls.minDistance = 40;
             this.controls.enableZoom = false;
             this.controls.enablePan = false;
             this.controls.enableDamping = true;
@@ -58,9 +46,7 @@ export class CameraController extends MapElement {
 
 
     override render(): void {
-        this.animateBetweenAnimationStates(this.animationStateData,0,0);
-       // this.animationState.currentState.position.lerpVectors(this.animationState.startState.position, this.animationState.endState.position, this.getEasedNumber(animationPercentage));
-       // this.animationState.currentState.rotation.lerpVectors(this.animationState.startState.rotation, this.animationState.endState.rotation, this.getEasedNumber(animationPercentage));
+        this.animateBetweenAnimationStates(this.animationStateData);
         this.updateCamera();
     }
 

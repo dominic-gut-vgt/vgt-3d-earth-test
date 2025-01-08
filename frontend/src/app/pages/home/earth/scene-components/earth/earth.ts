@@ -3,36 +3,35 @@ import { ThreejsMapEnvironmentData } from "../../../../../shared/data/threejs/th
 import { MapElement } from "../../base-classes/map-element";
 import { EventEmitter } from "@angular/core";
 import { LoadedMesh } from "../../primitives/loaded-mesh";
-import { EARTH_ANIMATION_STATES } from "./consts/earth-animation-states";
+import { AnimationStateData } from "../../../../../shared/interfaces/threejs/animation-state";
+import { getEarthAnimationStateData } from "../../animation-states/earth-animation-state-data";
+import { Satellite } from "../satellite/satellite";
 
 export class Earth extends MapElement {
     readonly loadedEvent = new EventEmitter<number>(); //emits percentage of loaded meshes
     private loadedMeshesCount: number = 0;
-
     private meshes: LoadedMesh[] = [];
+    private satellites: Satellite[] = [];
 
-    private earthAnimationStates = EARTH_ANIMATION_STATES;
+    private earthAnimationStates: AnimationStateData[] = getEarthAnimationStateData();
 
     constructor(threeMapEnvData: ThreejsMapEnvironmentData) {
         super(threeMapEnvData);
-        this.init(); //todo uncomment
+        this.init();
     }
 
     public render(): void {
-        const animationPercentageDelayedAndSpeedUp: number = this.calculateAnimationPercentage(1000, 4);
-        const animationPercentage: number = this.calculateAnimationPercentage();
-
-        this.meshes.forEach((mesh, ind) => {
-            //lerp between start and end position
-            this.earthAnimationStates[ind].currentState.position.lerpVectors(this.earthAnimationStates[ind].startState.position, this.earthAnimationStates[ind].endState.position, this.getEasedNumber(animationPercentageDelayedAndSpeedUp));
-            //lerp between start and end rotation
-            this.earthAnimationStates[ind].currentState.rotation.lerpVectors(this.earthAnimationStates[ind].startState.rotation, this.earthAnimationStates[ind].endState.rotation, this.getEasedNumber(animationPercentage));
-
-            mesh.setPosition(this.earthAnimationStates[ind].currentState.position);
-            mesh.setRotation(this.earthAnimationStates[ind].currentState.rotation);
+        //render earth itself
+        this.meshes.forEach((mesh, i) => {
+            this.animateBetweenAnimationStates(this.earthAnimationStates[i])
+            mesh.setPosition(this.earthAnimationStates[i].currentState.position);
+            mesh.setRotation(this.earthAnimationStates[i].currentState.rotation);
         });
 
-
+        //render satellites
+        this.satellites.forEach((satellite) => {
+            satellite.render();
+        });
     }
 
     public onClick(): void { }
@@ -126,11 +125,17 @@ export class Earth extends MapElement {
                 this.loadedCallback.bind(this),
             )
         );
+
+        for (let i = 0; i < 10; i++) {
+            this.satellites.push(
+                new Satellite(this.threeMapEnvData, this.meshes[0], this.loadedCallback.bind(this))
+            );
+        }
     }
 
     loadedCallback(): void {
         this.loadedMeshesCount++;
-        this.loadedEvent.emit((this.loadedMeshesCount / this.meshes.length) * 100);
+        this.loadedEvent.emit((this.loadedMeshesCount / (this.meshes.length + this.satellites.length)) * 100);
     }
 
 }

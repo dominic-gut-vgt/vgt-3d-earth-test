@@ -37,7 +37,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     //[SCENE_ENVIRONMENT_ELEMENT_TYPE.SATELITES]: 0
   };
   protected totalLoadedPercentage = signal<number>(0);
-  protected threeMapEnvData: ThreejsMapEnvironmentData = new ThreejsMapEnvironmentData();
+  protected threeMapEnvData: ThreejsMapEnvironmentData = new ThreejsMapEnvironmentData({animationFrameCount:20000});
   private subscriptions: Subscription[] = [];
 
 
@@ -212,7 +212,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
   }
 
   calculateTotalLoadedPercentage(): void {
-    this.totalLoadedPercentage.set(Object.values(this.loadedPercentages).reduce((sum, value) => sum + value) / Object.keys(this.loadedPercentages).length);
+    this.totalLoadedPercentage.set(Math.round(Object.values(this.loadedPercentages).reduce((sum, value) => sum + value) / Object.keys(this.loadedPercentages).length));
   }
 
   onClick(): void {

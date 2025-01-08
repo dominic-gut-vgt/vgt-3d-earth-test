@@ -12,7 +12,9 @@ export class ThreejsMapEnvironmentData {
 
     fontStdLoadedEvent: EventEmitter<void> = new EventEmitter<void>();
 
-    constructor() {
+    constructor(init: Partial<ThreejsMapEnvironmentData>) {
+        Object.assign(this, init);
+        console.log(this.animationFrameCount);
         this.preloadData();
     }
 

@@ -3,7 +3,7 @@ import { ThreejsMapEnvironmentData } from "../../../../shared/data/threejs/three
 import { ShaderMaterialSettings } from "../../../../shared/interfaces/threejs/shader-material-settings";
 import { MapElement } from "../base-classes/map-element";
 import { GLTFAsSeparatedMeshesImporter } from "../importers/gltf-as-separated-meshes-importer";
-import FakeGlowMaterial, { getTexturedFresnelMaterial } from "../shader-materials/fresnel-material";
+import { getTexturedFresnelMaterial } from "../shader-materials/fresnel-material";
 
 export class LoadedMesh extends MapElement {
 
@@ -66,11 +66,17 @@ export class LoadedMesh extends MapElement {
         });
     }
 
-    setPosition(pos: Vector3): void {
+    public setPosition(pos: Vector3): void {
         this.emptyObject.position.copy(pos)
     }
-    setRotation(rotation: Vector3): void {
-        this.emptyObject.rotation.set(rotation.x,rotation.y,rotation.z)
+    public setRotation(rotation: Vector3): void {
+        this.emptyObject.rotation.set(rotation.x, rotation.y, rotation.z)
+    }
+    public setScale(scale: Vector3): void {
+        this.emptyObject.scale.copy(scale);
+    }
+    public scaleUniform(scaleFac: number): void {
+        this.emptyObject.scale.set(scaleFac, scaleFac, scaleFac);
     }
 
     override render(): void {
