@@ -2,11 +2,17 @@
     <div class="sticky">
         <div class="canvas-container">
             <canvas #canvas class="canvas"></canvas>
+        </div>
+        <div #logoContainer id="logo-container" [ngStyle]="{
+            'transform':'scale('+logoOverlayScale()+')',
+            'opacity':logoOverlayOpacity(),
+            }">
+            <img src="./svgs/logo-with-text.svg" />
+        </div>
 
-            <div [ngClass]="!allSceneComponentsLoaded()?'loading-overlay show':'loading-overlay'">
-                <p>loading</p>
-                <h3>{{totalLoadedPercentage()}}%</h3>
-            </div>
+        <div [ngClass]="!allSceneComponentsLoaded()?'loading-overlay show':'loading-overlay'">
+            <p>loading</p>
+            <h3>{{totalLoadedPercentage()}}%</h3>
         </div>
     </div>
 </div>

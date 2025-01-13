@@ -30,10 +30,8 @@ export class Earth extends MapElement {
         //render satellites
         this.satellites.forEach((satellite) => {
             satellite.render();
-            if (this.frameCount % 60 === 0 ) {
-                satellite.calcNearNeighbours(this.satellites);
-                console.log(this.currentAnimationFrame);
-                satellite.setShow(this.currentAnimationFrame>5000);
+            if (this.frameCount % 60 === 0) {
+                satellite.setShowAndCalcNearNeighbours(this.currentAnimationFrame > 5000, this.satellites);
             }
         });
     }

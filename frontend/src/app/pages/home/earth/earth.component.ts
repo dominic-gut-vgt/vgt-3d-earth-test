@@ -27,20 +27,18 @@ type Dictionary<T> = {
 export class EarthComponent extends TouchEventHelper implements OnInit, OnDestroy {
 
   //Viewchildren
-  @ViewChild('canvas') canvasElem!: ElementRef;
-  @ViewChild('scrollContainerElem') scrollContainerElemRef!: ElementRef;
-
+  @ViewChild('canvas') private canvasElem!: ElementRef;
 
   //data
   private loadedPercentages: Dictionary<number> = {
     [SCENE_ENVIRONMENT_ELEMENT_TYPE.EARTH]: 0,
-    //[SCENE_ENVIRONMENT_ELEMENT_TYPE.SATELITES]: 0
   };
+
   protected totalLoadedPercentage = signal<number>(0);
   protected threeMapEnvData: ThreejsMapEnvironmentData = new ThreejsMapEnvironmentData({ animationFrameCount: 20000 });
   private subscriptions: Subscription[] = [];
-
-
+  protected logoOverlayScale = signal<number>(1);
+  protected logoOverlayOpacity = signal<number>(1);
 
   //flags
   private runLoop: boolean = true;
@@ -249,6 +247,10 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
   @HostListener('window:scroll', ['$event'])
   onWindowScroll() {
     this.threeMapEnvData.currentAnimationFrame = window.scrollY;
+
+    const p: number = this.threeMapEnvData.currentAnimationFrame / (this.threeMapEnvData.animationFrameCount / 6);
+    this.logoOverlayOpacity.set(1 - p - (this.allSceneComponentsLoaded() ? 0 : 1));
+    this.logoOverlayScale.set(1 + p * 10);
   }
 
   @HostListener('window:resize', ['$event'])

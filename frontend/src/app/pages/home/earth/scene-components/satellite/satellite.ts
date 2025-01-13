@@ -89,7 +89,7 @@ export class Satellite extends MapElement {
     }
   }
 
-  public calcNearNeighbours(allSatellites: Satellite[]): void {
+  private calcNearNeighbours(allSatellites: Satellite[]): void {
     //find near satellites
     if (this.show) {
       for (let i = 0; i < allSatellites.length; i++) {
@@ -179,8 +179,9 @@ export class Satellite extends MapElement {
   }
 
   //setters---------------------------
-  public setShow(state: boolean): void {
+  public setShowAndCalcNearNeighbours(state: boolean, allSatellites: Satellite[]): void {
     this.show = state;
+    this.calcNearNeighbours(allSatellites);
   }
 
 }

@@ -1,38 +1,68 @@
 @import "../../../shared/styles/variables.less";
 
+@color-bg: white;
+
 .sticky {
     position: sticky;
     top: 0px;
     width: 100%;
     height: 100dvh;
     overflow: hidden;
+    background-color: @color-bg;
 
-    .canvas-container{
+    .canvas-container {
         position: relative;
 
-        .loading-overlay{
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: black;
-            opacity: 0;
-            transform: translateX(100dvw);
-            transition: 0.4s opacity, 0.4s transform 0.4s;
-            p,h3{
-                color: white;
-            }
-        }
 
-        .loading-overlay.show{
-            opacity: 1;
-            transform: translateX(0px);
+    }
+
+    #logo-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+        background-color: @color-bg;
+
+        img {
+            max-width: 800px;
         }
+    }
+
+
+
+    //loading overlay--------------
+    .loading-overlay {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: @color-bg;
+        opacity: 0;
+        transform: translateX(100dvw);
+        transition: 0.4s opacity, 0.4s transform 0.4s;
+
+        p,
+        h3 {
+            color: @color-bg;
+            filter: invert();
+        }
+    }
+
+    .loading-overlay.show {
+        opacity: 1;
+        transform: translateX(0px);
     }
 }
