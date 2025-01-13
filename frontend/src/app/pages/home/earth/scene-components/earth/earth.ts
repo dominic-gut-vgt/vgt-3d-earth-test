@@ -126,7 +126,7 @@ export class Earth extends MapElement {
             )
         );
 
-        const sateliteAmount: number = 3;
+        const sateliteAmount: number = 100;
         for (let i = 0; i < sateliteAmount / 2; i++) { 
             this.satellites.push(
                 new Satellite(this.threeMapEnvData, [this.meshes[0], this.meshes[this.meshes.length - 1]], this.loadedCallback.bind(this))
