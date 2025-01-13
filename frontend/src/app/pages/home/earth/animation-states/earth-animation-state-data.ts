@@ -3,7 +3,7 @@ import { AnimationStateData } from "../../../../shared/interfaces/threejs/animat
 
 const EARTH_ROTATION: number = 1 * Math.PI;
 const EARTH_ANIMATION_DELAY: number = 3000;
-const SPEED_FAC:number=1;
+const SPEED_FAC: number = 1;
 
 export function getEarthAnimationStateData(): AnimationStateData[] {
   return [
@@ -15,8 +15,18 @@ export function getEarthAnimationStateData(): AnimationStateData[] {
           percentage: 0,
         },
         {//state 2
-          position: new Vector3(0, -1.4, 0),
-          rotation: new Vector3(0, EARTH_ROTATION, 0),
+          position: new Vector3(0, -2 * 0.2, 0),
+          rotation: new Vector3(0, EARTH_ROTATION * 0.2, 0),
+          percentage: 0.2,
+        },
+        {//state 2
+          position: new Vector3(0, -2, 0),
+          rotation: new Vector3(Math.PI / 8, EARTH_ROTATION * 0.6, 0),
+          percentage: 0.6,
+        },
+        {//state 3
+          position: new Vector3(0, -2, 0),
+          rotation: new Vector3(Math.PI / 8, EARTH_ROTATION, 0),
           percentage: 1,
         },
         //... more states possible. adjust percentage values for timing
@@ -34,7 +44,12 @@ export function getEarthAnimationStateData(): AnimationStateData[] {
           percentage: 0
         },
         {
-          position: new Vector3(0, -0.8, 0),
+          position: new Vector3(0, -1.3, 0),
+          rotation: new Vector3(0, EARTH_ROTATION * 0.6, 0),
+          percentage: 0.6,
+        },
+        {
+          position: new Vector3(0, -1.3, 0),
           rotation: new Vector3(0, EARTH_ROTATION, 0),
           percentage: 1,
         }
@@ -50,7 +65,12 @@ export function getEarthAnimationStateData(): AnimationStateData[] {
         percentage: 0
       },
       {
-        position: new Vector3(0, -0.4, 0),
+        position: new Vector3(0, -0.7, 0),
+        rotation: new Vector3(0, EARTH_ROTATION * 0.6, 0),
+        percentage: 0.6
+      },
+      {
+        position: new Vector3(0, -0.7, 0),
         rotation: new Vector3(0, EARTH_ROTATION, 0),
         percentage: 1
       }
@@ -67,7 +87,7 @@ export function getEarthAnimationStateData(): AnimationStateData[] {
       },
       {
         position: new Vector3(0, 0, 0),
-        rotation: new Vector3(0, EARTH_ROTATION, 0),
+        rotation: new Vector3(0, EARTH_ROTATION * 0.6, 0),
         percentage: 1
       }
     ],
@@ -80,9 +100,20 @@ export function getEarthAnimationStateData(): AnimationStateData[] {
         position: new Vector3(0, 0, 0),
         rotation: new Vector3(),
         percentage: 0,
-      }, {
-        position: new Vector3(0, 0.5, 0),
-        rotation: new Vector3(0, EARTH_ROTATION, 0),
+      },
+      {
+        position: new Vector3(0, 0.8 * 0.2, 0),
+        rotation: new Vector3(0, EARTH_ROTATION * 0.2, 0),
+        percentage: 0.2,
+      },
+      {
+        position: new Vector3(0, 0.8, 0),
+        rotation: new Vector3(-Math.PI / 8, EARTH_ROTATION * 0.6, 0),
+        percentage: 0.6
+      },
+      {
+        position: new Vector3(0, 0.8, 0),
+        rotation: new Vector3(-Math.PI / 8, EARTH_ROTATION, 0),
         percentage: 1
       }
     ],

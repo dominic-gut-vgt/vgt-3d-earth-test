@@ -25,7 +25,7 @@ export class Satellite extends MapElement {
   private normal = new Vector3()
   private p = new Vector3();
   private flightHeight: number = 0.1;
-  private flightSpeed: number = 0.002;
+  private flightSpeed: number = 0.003;
 
   //inter satellite connections
   private nearSatellites: NearSatellite[] = [];
@@ -141,7 +141,7 @@ export class Satellite extends MapElement {
       this.targetInd = 1;
     }
 
-    const geometry = new SphereGeometry(0.005, 32, 16);
+    const geometry = new SphereGeometry(0.005, 3, 3);
     this.material = this.materials.accent1Material;
     this.material.transparent = true;
     this.mesh = new Mesh(geometry, this.material);

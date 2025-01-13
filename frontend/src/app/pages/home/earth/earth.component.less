@@ -11,9 +11,13 @@
     background-color: @color-bg;
 
     .canvas-container {
-        position: relative;
-
-
+        .canvas{
+            opacity: 0;
+            transition: 1s opacity;
+        }
+        .canvas.show{
+            opacity: 1;
+        }
     }
 
     #logo-container {
@@ -56,8 +60,7 @@
 
         p,
         h3 {
-            color: @color-bg;
-            filter: invert();
+            color: black
         }
     }
 

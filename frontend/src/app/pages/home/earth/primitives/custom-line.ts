@@ -1,4 +1,4 @@
-import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from "three";
+import { BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Vector3 } from "three";
 import { ThreejsMapEnvironmentData } from "../../../../shared/data/threejs/threejs-map-environment-data";
 import { MapElement } from "../base-classes/map-element";
 
@@ -28,12 +28,31 @@ export class CustomLine extends MapElement {
     this.scene?.add(this.line);
   }
 
+
   public updateLine(points: Vector3[]) {
     if (this.line) {
-      const geometry = new BufferGeometry().setFromPoints(points);
-      this.line.geometry.dispose();
-      this.line.geometry = geometry;
-
+      const position = this.line.geometry.attributes['position'];
+  
+      if (points.length * 3 !== position.array.length) {
+        // Resize the array if the number of points changes
+        const vertices = new Float32Array(points.length * 3);
+        points.forEach((point, index) => {
+          vertices[index * 3] = point.x;
+          vertices[index * 3 + 1] = point.y;
+          vertices[index * 3 + 2] = point.z;
+        });
+        this.line.geometry.setAttribute('position', new BufferAttribute(vertices, 3));
+      } else {
+        // Update the existing array with new point values
+        points.forEach((point, index) => {
+          position.array[index * 3] = point.x;
+          position.array[index * 3 + 1] = point.y;
+          position.array[index * 3 + 2] = point.z;
+        });
+        position.needsUpdate = true; // Notify Three.js of the update
+      }
+  
+      // Update the material properties if necessary
       this.calcOpacity();
       this.material.opacity = this.opacity;
     }

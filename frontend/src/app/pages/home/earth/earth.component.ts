@@ -39,6 +39,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
   private subscriptions: Subscription[] = [];
   protected logoOverlayScale = signal<number>(1);
   protected logoOverlayOpacity = signal<number>(1);
+  protected showCanvas = signal<boolean>(true);
 
   //flags
   private runLoop: boolean = true;
@@ -251,6 +252,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     const p: number = this.threeMapEnvData.currentAnimationFrame / (this.threeMapEnvData.animationFrameCount / 6);
     this.logoOverlayOpacity.set(1 - p - (this.allSceneComponentsLoaded() ? 0 : 1));
     this.logoOverlayScale.set(1 + p * 10);
+    this.showCanvas.set(this.threeMapEnvData.currentAnimationFrame > this.threeMapEnvData.animationFrameCount - window.innerHeight);
   }
 
   @HostListener('window:resize', ['$event'])

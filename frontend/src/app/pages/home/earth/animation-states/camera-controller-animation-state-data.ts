@@ -13,17 +13,17 @@ export function getCameraControllerAnimationStateData(cameraControllsMaxDistance
       percentage: 0,
     },
     {
-      position: new Vector3(0, 0, cameraControllsMaxDistance / 2),
+      position: new Vector3(0, 0, cameraControllsMaxDistance / 1.5),
       rotation: new Vector3(0, 0, ROTATION_START + ROTATION_DIST * 0.4),
       percentage: 0.2
     },
     {
-      position: new Vector3(0, 0, cameraControllsMaxDistance / 2.3),
+      position: new Vector3(0, 0, cameraControllsMaxDistance / 1.8),
       rotation: new Vector3(0, 0, ROTATION_START + ROTATION_DIST * 0.9),
-      percentage: 0.9
+      percentage: 0.7
     },
     {
-      position: new Vector3(0, 0, -0.02),
+      position: new Vector3(0, 0, 1),
       rotation: new Vector3(0, 0, ROTATION_END),
       percentage: 1
     }

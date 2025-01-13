@@ -1,7 +1,7 @@
 <div class="animation-container" [ngStyle]="{'height':(threeMapEnvData.animationFrameCount)+'px'}">
     <div class="sticky">
-        <div class="canvas-container">
-            <canvas #canvas class="canvas"></canvas>
+        <div class="canvas-container" >
+            <canvas #canvas [ngClass]="showCanvas()?'canvas':'canvas'"></canvas>
         </div>
         <div #logoContainer id="logo-container" [ngStyle]="{
             'transform':'scale('+logoOverlayScale()+')',
