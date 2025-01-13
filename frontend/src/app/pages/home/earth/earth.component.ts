@@ -37,7 +37,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     //[SCENE_ENVIRONMENT_ELEMENT_TYPE.SATELITES]: 0
   };
   protected totalLoadedPercentage = signal<number>(0);
-  protected threeMapEnvData: ThreejsMapEnvironmentData = new ThreejsMapEnvironmentData({animationFrameCount:20000});
+  protected threeMapEnvData: ThreejsMapEnvironmentData = new ThreejsMapEnvironmentData({ animationFrameCount: 20000 });
   private subscriptions: Subscription[] = [];
 
 
@@ -84,6 +84,8 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
       if (this.allSceneComponentsLoaded()) {
         this.threeMapEnvData.earth?.render();
       }
+
+      this.threeMapEnvData.frameCount++;
 
       window.requestAnimationFrame(() => {
         this.isLoopRunning = false;

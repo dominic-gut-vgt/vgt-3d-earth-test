@@ -14,7 +14,6 @@ export class ThreejsMapEnvironmentData {
 
     constructor(init: Partial<ThreejsMapEnvironmentData>) {
         Object.assign(this, init);
-        console.log(this.animationFrameCount);
         this.preloadData();
     }
 
@@ -36,14 +35,18 @@ export class ThreejsMapEnvironmentData {
     mousePos: Vector2 = new Vector2();
     mouseIsDown: boolean = false;
     /**
-  * @description adjust this to change animation duration
-  */
+     * @description adjust this to change animation duration
+     */
     animationFrameCount: number = 10000;
     /**
      * @description animationPercentage is based on scroll height and animationContainerHeight
      */
     currentAnimationFrame: number = 0;
 
+    /**
+     * @description real framecount, incremented on every loop iteration
+     */
+    frameCount: number = 0;
 
     //custom classes----------------------
     camController!: CameraController | null;
@@ -61,7 +64,7 @@ export class ThreejsMapEnvironmentData {
         colorDark: 0x333333,
         colorBright: 0xffffff,
         colorAcent1Light: 0xfa7f9d,
-        colorAccent1: 0xff1f55,
+        colorAccent1: 0x4dedff,
         colorAccent2: 0xfea25b,
     }
 

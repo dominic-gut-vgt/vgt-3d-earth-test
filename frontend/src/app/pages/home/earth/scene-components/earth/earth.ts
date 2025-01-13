@@ -12,7 +12,6 @@ export class Earth extends MapElement {
     private loadedMeshesCount: number = 0;
     private meshes: LoadedMesh[] = [];
     private satellites: Satellite[] = [];
-
     private earthAnimationStates: AnimationStateData[] = getEarthAnimationStateData();
 
     constructor(threeMapEnvData: ThreejsMapEnvironmentData) {
@@ -31,6 +30,11 @@ export class Earth extends MapElement {
         //render satellites
         this.satellites.forEach((satellite) => {
             satellite.render();
+            if (this.frameCount % 60 === 0 ) {
+                satellite.calcNearNeighbours(this.satellites);
+                console.log(this.currentAnimationFrame);
+                satellite.setShow(this.currentAnimationFrame>5000);
+            }
         });
     }
 
@@ -123,13 +127,13 @@ export class Earth extends MapElement {
                 [],
                 0,
                 this.loadedCallback.bind(this),
-            )
+            ),
         );
 
-        const sateliteAmount: number = 100;
-        for (let i = 0; i < sateliteAmount / 2; i++) { 
+        const sateliteAmount: number = 200;
+        for (let i = 0; i < sateliteAmount / 2; i++) {
             this.satellites.push(
-                new Satellite(this.threeMapEnvData, [this.meshes[0], this.meshes[this.meshes.length - 1]], this.loadedCallback.bind(this))
+                new Satellite(this.threeMapEnvData, i, [this.meshes[0], this.meshes[this.meshes.length - 1]], this.loadedCallback.bind(this))
             );
         }
     }

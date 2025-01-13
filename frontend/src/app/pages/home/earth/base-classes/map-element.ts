@@ -88,6 +88,9 @@ export abstract class MapElement {
     set animationFrameCount(animationFrameCount: number) {
         this.threeMapEnvData.animationFrameCount = animationFrameCount;
     }
+    get frameCount(): number {
+        return this.threeMapEnvData.frameCount;
+    }
 
     /**
      * @description animates between states of animationStateData and updates currentState of animationStateData
