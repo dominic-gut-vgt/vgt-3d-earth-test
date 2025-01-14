@@ -12,8 +12,9 @@ export class CustomLine extends MapElement {
   private opacity: number = 0;
   private maxOpacity: number = 0;
   private opacityAnimationStep: number = 0.02;
+  private lineWidth: number = 3;
 
-  constructor(private threeMapEnvironmentData: ThreejsMapEnvironmentData, color: number, maxOpacity: number) {
+  constructor(private threeMapEnvironmentData: ThreejsMapEnvironmentData, color: number, maxOpacity: number, lineWidth: number = 3) {
     super(threeMapEnvironmentData);
     this.color = color;
     this.maxOpacity = maxOpacity;
@@ -24,6 +25,7 @@ export class CustomLine extends MapElement {
     const geometry = new BufferGeometry().setFromPoints(points);
     this.material = new LineBasicMaterial({ color: this.color });
     this.material.transparent = true;
+    this.material.linewidth = this.lineWidth;
     this.line = new Line(geometry, this.material);
     this.scene?.add(this.line);
   }
@@ -32,7 +34,7 @@ export class CustomLine extends MapElement {
   public updateLine(points: Vector3[]) {
     if (this.line) {
       const position = this.line.geometry.attributes['position'];
-  
+
       if (points.length * 3 !== position.array.length) {
         // Resize the array if the number of points changes
         const vertices = new Float32Array(points.length * 3);
@@ -51,7 +53,7 @@ export class CustomLine extends MapElement {
         });
         position.needsUpdate = true; // Notify Three.js of the update
       }
-  
+
       // Update the material properties if necessary
       this.calcOpacity();
       this.material.opacity = this.opacity;

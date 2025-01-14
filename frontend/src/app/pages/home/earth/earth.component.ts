@@ -1,5 +1,5 @@
 import { Component, computed, ElementRef, HostListener, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
-import { Clock, Scene, Vector2, WebGLRenderer } from 'three';
+import { Clock, Scene, Vector2, Vector3, WebGLRenderer } from 'three';
 import { ThreejsMapEnvironmentData } from '../../../shared/data/threejs/threejs-map-environment-data';
 import { CameraController } from './scene-components/scene-environment/camera-controller';
 import { TouchEventHelper } from '../../../shared/classes/touch-event-helper';
@@ -12,10 +12,30 @@ import { FXAAShader, ShaderPass, UnrealBloomPass } from 'three/examples/jsm/Addo
 import { Subscription } from 'rxjs';
 import { SCENE_ENVIRONMENT_ELEMENT_TYPE } from '../../../shared/enums/threejs/scene-environment-element-type';
 import { CommonModule } from '@angular/common';
+import { ObjectWithPosMappedToScreen } from '../../../shared/interfaces/threejs/object-with-pos-mapped-to-screen';
+import { MODULE_NAME } from '../../../shared/enums/threejs/module-name';
 
-type Dictionary<T> = {
-  [key in SCENE_ENVIRONMENT_ELEMENT_TYPE]: T
+
+interface ModuleDescription {
+  title: string,
+  description: ''
 }
+interface ModuleInfoBoxInfo {
+  moduleDescription: ModuleDescription,
+  alignTop: boolean; //align top if true, align bottom if false
+  distanceToCenter: number; //distance in dvh to center point
+}
+
+type loadedPercentagesDict = {
+  [key in SCENE_ENVIRONMENT_ELEMENT_TYPE]: number
+}
+type ModuleInfoBoxInfoDict = {
+  [key in MODULE_NAME]: ModuleInfoBoxInfo
+}
+type Dictionary<T> = {
+  [key: string]: T
+}
+
 
 @Component({
   selector: 'app-earth',
@@ -30,7 +50,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
   @ViewChild('canvas') private canvasElem!: ElementRef;
 
   //data
-  private loadedPercentages: Dictionary<number> = {
+  private loadedPercentages: loadedPercentagesDict = {
     [SCENE_ENVIRONMENT_ELEMENT_TYPE.EARTH]: 0,
   };
 
@@ -40,6 +60,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
   protected logoOverlayScale = signal<number>(1);
   protected logoOverlayOpacity = signal<number>(1);
   protected showCanvas = signal<boolean>(true);
+  protected infoBoxPositions = signal<Dictionary<ObjectWithPosMappedToScreen<ModuleInfoBoxInfo>>>({});
 
   //flags
   private runLoop: boolean = true;
@@ -186,6 +207,19 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
           this.loadedPercentages[SCENE_ENVIRONMENT_ELEMENT_TYPE.EARTH] = percentage;
           this.calculateTotalLoadedPercentage();
         }),
+
+        this.threeMapEnvData.earth.objectPosUpdated.subscribe((objectsWithPositionsMappedToScreen: ObjectWithPosMappedToScreen<null>[]) => {
+          const updatedPositions: Dictionary<ObjectWithPosMappedToScreen<ModuleInfoBoxInfo>> = this.infoBoxPositions();
+          objectsWithPositionsMappedToScreen.forEach((obj) => {
+            const objWithData: ObjectWithPosMappedToScreen<ModuleInfoBoxInfo> = {
+              ...obj,
+              data: MODULE_BOX_INFO_DICT[obj.objectName as MODULE_NAME]
+            };
+            updatedPositions[obj.objectName] = objWithData;
+          });
+          this.infoBoxPositions.set(updatedPositions);
+          console.log(this.infoBoxPositions);
+        }),
       );
     }
   }
@@ -252,7 +286,7 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     const p: number = this.threeMapEnvData.currentAnimationFrame / (this.threeMapEnvData.animationFrameCount / 6);
     this.logoOverlayOpacity.set(1 - p - (this.allSceneComponentsLoaded() ? 0 : 1));
     this.logoOverlayScale.set(1 + p * 10);
-    this.showCanvas.set(this.threeMapEnvData.currentAnimationFrame > this.threeMapEnvData.animationFrameCount - window.innerHeight);
+    this.showCanvas.set(this.threeMapEnvData.currentAnimationFrame < this.threeMapEnvData.animationFrameCount - window.innerHeight);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -262,4 +296,72 @@ export class EarthComponent extends TouchEventHelper implements OnInit, OnDestro
     this.updateAfterResize();
   }
 
+}
+
+
+const MODULE_BOX_INFO_DICT: ModuleInfoBoxInfoDict = {
+  [MODULE_NAME.BILLING]: {
+    moduleDescription: {
+      title: 'Billing',
+      description: ''
+    },
+    alignTop: false,
+    distanceToCenter: 10,
+  },
+  [MODULE_NAME.CUSTOMER_PLATFORM]: {
+    moduleDescription: {
+      title: 'Customer platform',
+      description: ''
+    },
+    alignTop: false,
+    distanceToCenter: 10,
+  },
+  [MODULE_NAME.ERP]: {
+    moduleDescription: {
+      title: 'ERP',
+      description: ''
+    },
+    alignTop: false,
+    distanceToCenter: 10,
+  },
+  [MODULE_NAME.GENIA]: {
+    moduleDescription: {
+      title: 'GENIA',
+      description: ''
+    },
+    alignTop: true,
+    distanceToCenter: 10,
+  },
+  [MODULE_NAME.MARKETPLACE]: {
+    moduleDescription: {
+      title: 'Marketplace',
+      description: ''
+    },
+    alignTop: true,
+    distanceToCenter: 10,
+  },
+  [MODULE_NAME.MDM]: {
+    moduleDescription: {
+      title: 'MDM',
+      description: ''
+    },
+    alignTop: true,
+    distanceToCenter: 10,
+  },
+  [MODULE_NAME.REALTIME_CONTROLLER]: {
+    moduleDescription: {
+      title: 'Realtime controller',
+      description: ''
+    },
+    alignTop: false,
+    distanceToCenter: 10,
+  },
+  [MODULE_NAME.SDV]: {
+    moduleDescription: {
+      title: 'SDV',
+      description: ''
+    },
+    alignTop: true,
+    distanceToCenter: 10,
+  },
 }

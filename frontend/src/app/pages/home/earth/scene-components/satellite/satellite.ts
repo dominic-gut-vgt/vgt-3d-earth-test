@@ -34,11 +34,12 @@ export class Satellite extends MapElement {
 
 
 
-  constructor(threeMapEnvData: ThreejsMapEnvironmentData, ind: number, possibleTargets: LoadedMesh[], loadedCallback: () => void) {
+  constructor(threeMapEnvData: ThreejsMapEnvironmentData, ind: number, flightHeight: number, possibleTargets: LoadedMesh[], loadedCallback: () => void) {
     super(threeMapEnvData);
+    this.ind = ind;
+    this.flightHeight = flightHeight;
     this.possibleTargets = possibleTargets;
     this.loadedCallback = loadedCallback;
-    this.ind = ind;
     this.init();
   }
 

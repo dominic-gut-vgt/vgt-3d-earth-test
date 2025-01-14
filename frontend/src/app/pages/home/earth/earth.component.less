@@ -10,12 +10,13 @@
     overflow: hidden;
     background-color: @color-bg;
 
-    .canvas-container {
-        .canvas{
+    #canvas-container {
+        .canvas {
             opacity: 0;
             transition: 1s opacity;
         }
-        .canvas.show{
+
+        .canvas.show {
             opacity: 1;
         }
     }
@@ -36,6 +37,24 @@
 
         img {
             max-width: 800px;
+        }
+    }
+
+    //invo-boxes-------------------
+    #info-boxes {
+      
+
+        .info-box.one {
+            display: flex;
+            flex-direction: column;
+            border-left: solid 2px white;
+            position: absolute;
+            
+            z-index: 1;
+
+            h1 {
+                color: white;
+            }
         }
     }
 

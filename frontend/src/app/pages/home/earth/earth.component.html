@@ -1,7 +1,7 @@
 <div class="animation-container" [ngStyle]="{'height':(threeMapEnvData.animationFrameCount)+'px'}">
     <div class="sticky">
-        <div class="canvas-container" >
-            <canvas #canvas [ngClass]="showCanvas()?'canvas':'canvas'"></canvas>
+        <div id="canvas-container">
+            <canvas #canvas [ngClass]="showCanvas()?'canvas show':'canvas'"></canvas>
         </div>
         <div #logoContainer id="logo-container" [ngStyle]="{
             'transform':'scale('+logoOverlayScale()+')',
@@ -10,9 +10,31 @@
             <img src="./svgs/logo-with-text.svg" />
         </div>
 
+
+        <div id="info-boxes">
+            @for(infoBoxPositionKeyValue of infoBoxPositions() | keyvalue;track infoBoxPositionKeyValue.key){
+            <div class="info-box one" [ngStyle]="{
+                    'left':infoBoxPositionKeyValue.value.mappedPos.x+'px',
+                    'top':infoBoxPositionKeyValue.value.data.alignTop?'calc('+(infoBoxPositionKeyValue.value.mappedPos.y+'px - '+ infoBoxPositionKeyValue.value.data.distanceToCenter+'dvh' )+')':infoBoxPositionKeyValue.value.mappedPos.y+'px',
+                    'height':infoBoxPositionKeyValue.value.data.distanceToCenter+'dvh',
+                    'justify-content':infoBoxPositionKeyValue.value.data.alignTop?'flex-start':'flex-end'
+                }">
+                <div class="connection-line-container">
+                    <div class="line"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="content-container">
+                    <h1>{{infoBoxPositionKeyValue.value.data.moduleDescription.title}}</h1>
+                </div>
+            </div>
+            }
+        </div>
+
         <div [ngClass]="!allSceneComponentsLoaded()?'loading-overlay show':'loading-overlay'">
             <p>loading</p>
             <h3>{{totalLoadedPercentage()}}%</h3>
         </div>
+
+
     </div>
 </div>

@@ -7,16 +7,18 @@ import { getTexturedFresnelMaterial } from "../shader-materials/fresnel-material
 
 export class LoadedMesh extends MapElement {
 
-    relativeModelPath: string;
-    shaderMaterialSettings: ShaderMaterialSettings[];
-    emptyObject!: Object3D;
-    layer: number = 0;
-    standardMaterials: Material[] = [];
-    loadedCallback: Function = () => { };
+    private relativeModelPath: string;
+    private name: string = '';
+    private shaderMaterialSettings: ShaderMaterialSettings[];
+    private emptyObject!: Object3D;
+    private layer: number = 0;
+    private standardMaterials: Material[] = [];
+    private loadedCallback: Function = () => { };
 
     constructor(
         threeMapEnvData: ThreejsMapEnvironmentData,
         relativeModelPath: string,
+        name: string,
         shaderMaterialSettings: ShaderMaterialSettings[],
         standardMaterials: Material[],
         layer: number,
@@ -24,13 +26,34 @@ export class LoadedMesh extends MapElement {
     ) {
         super(threeMapEnvData);
         this.relativeModelPath = relativeModelPath;
+        this.name = name;
         this.shaderMaterialSettings = shaderMaterialSettings;
         this.standardMaterials = standardMaterials;
         this.layer = layer;
         this.loadedCallback = loadedCallback;
         this.init();
     }
+    override render(): void {
+    }
+    override resize(): void {
+    }
 
+    public addPinnedMesh(objectToPin: Mesh): void {
+        this.emptyObject.add(objectToPin)
+    }
+
+    public setPosition(pos: Vector3): void {
+        this.emptyObject.position.copy(pos)
+    }
+    public setRotation(rotation: Vector3): void {
+        this.emptyObject.rotation.set(rotation.x, rotation.y, rotation.z)
+    }
+    public setScale(scale: Vector3): void {
+        this.emptyObject.scale.copy(scale);
+    }
+    public scaleUniform(scaleFac: number): void {
+        this.emptyObject.scale.set(scaleFac, scaleFac, scaleFac);
+    }
 
     override init(): void {
 
@@ -66,35 +89,15 @@ export class LoadedMesh extends MapElement {
         });
     }
 
-    public addPinnedMesh(objectToPin:Mesh):void{
-        this.emptyObject.add(objectToPin)
-    }
-
-    public setPosition(pos: Vector3): void {
-        this.emptyObject.position.copy(pos)
-    }
-    public setRotation(rotation: Vector3): void {
-        this.emptyObject.rotation.set(rotation.x, rotation.y, rotation.z)
-    }
-    public setScale(scale: Vector3): void {
-        this.emptyObject.scale.copy(scale);
-    }
-    public scaleUniform(scaleFac: number): void {
-        this.emptyObject.scale.set(scaleFac, scaleFac, scaleFac);
-    }
-
-    override render(): void {
-    }
-    override resize(): void {
-    }
-
-    
 
     //getters
-    getPos():Vector3{
+    public getPos(): Vector3 {
         return new Vector3().copy(this.emptyObject.position)
     }
-    getRotation():Vector3{
+    public getRotation(): Vector3 {
         return new Vector3().copy(this.emptyObject.rotation)
+    }
+    public getName(): string {
+        return this.name;
     }
 }

@@ -1,5 +1,5 @@
 import { EventEmitter } from "@angular/core";
-import { Renderer, Scene, Camera, PerspectiveCamera, Clock, Vector2 } from "three";
+import { Renderer, Scene, Camera, PerspectiveCamera, Clock, Vector2, Vector3 } from "three";
 import { Font } from "three/examples/jsm/Addons.js";
 import { ThreejsMapEnvironmentData } from "../../../../shared/data/threejs/threejs-map-environment-data";
 import { Colors } from "../../../../shared/interfaces/threejs/colors";
@@ -105,8 +105,11 @@ export abstract class MapElement {
                 const endState: AnimationState = animationStateData.states[i + 1];
                 if (startState.percentage !== null && endState.percentage !== null) {
                     p = this.mapNumber(p - startState.percentage, 0, endState.percentage - startState.percentage, 0, 1); // to easy every animation segment from 0 to 1
-                    animationStateData.currentState.position.lerpVectors(startState.position, endState.position, p);
-                    animationStateData.currentState.rotation.lerpVectors(startState.rotation, endState.rotation, p);
+                    animationStateData.setCurrentState({
+                        position: new Vector3().lerpVectors(startState.position, endState.position, p),
+                        rotation: new Vector3().lerpVectors(startState.rotation, endState.rotation, p),
+                        percentage: animationStateData.getCurrentState().percentage
+                    });
                     break;
                 }
             }

@@ -51,8 +51,8 @@ export class CameraController extends MapElement {
     }
 
     private updateCamera(): void {
-        this.camera?.position.copy(this.animationStateData.currentState.position);
-        this.camera?.rotation.set(this.animationStateData.currentState.rotation.x, this.animationStateData.currentState.rotation.y, this.animationStateData.currentState.rotation.z);
+        this.camera?.position.copy(this.animationStateData.getCurrentState().position);
+        this.camera?.rotation.set(this.animationStateData.getCurrentState().rotation.x, this.animationStateData.getCurrentState().rotation.y, this.animationStateData.getCurrentState().rotation.z);
         // this.controls.update();
     }
 
